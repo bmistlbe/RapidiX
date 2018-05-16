@@ -129,7 +129,7 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
         else
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]];
         
-        values[pos[i][0]][pos[i][1]][pos[i][2]]*=Jac*pow(ar,pos[i][0])*pow(L,pos[i][2]);
+        values[pos[i][0]][pos[i][1]][pos[i][2]]*=Jac*pow(L,pos[i][2]);
         
     }
     vector<vector<double> > res(6,vector<double> (4,0));
@@ -143,6 +143,9 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
         res[i]=MuREvolution(Lfr,res[i]);
         res[i]=Multiply(WC,res[i]);
     }
+    for(int i=0;i<res.size();++i)
+        for(int j=0;j<res[i].size();++j)
+            res[i][j]*=pow(ar,j);
     //*/
 
     return res;

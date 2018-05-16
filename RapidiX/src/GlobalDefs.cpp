@@ -3,6 +3,14 @@
 
 double Pi=3.1415926535897932;
 
+int delcoef0=1;
+int delcoef1=1;
+int delcoef2=1;
+int delcoef3=1;
+int delcoef4=1;
+int delcoef5=1;
+int delcoef6=1;
+
 
 vector<int> lst(int a1,int a2,int a3)
 {

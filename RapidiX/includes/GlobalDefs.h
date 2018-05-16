@@ -31,7 +31,7 @@ vector<double> Add(const vector<double> & a,const vector<double> & b);
 
 
 vector<int> lst(int a1,int a2,int a3);
-
+extern int delcoef0,delcoef1,delcoef2,delcoef3,delcoef4,delcoef5,delcoef6;
 
 
 #endif

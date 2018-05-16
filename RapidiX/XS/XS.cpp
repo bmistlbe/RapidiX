@@ -14,17 +14,4 @@ void CrossSection::SetCoefs()
     return;
 }
 
-void CrossSection::SetNNLO()
-{
-    return;
-}
-
-
-
-void CrossSection::SetN3LO()
-{
-    return;
-}
-
-
 

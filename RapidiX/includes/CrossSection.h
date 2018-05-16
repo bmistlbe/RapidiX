@@ -86,7 +86,7 @@ public:
         pos.push_back(lst(1,3,0));
         pos.push_back(lst(1,3,1));
         //NNLO - g g
-        /*pos.push_back(lst(2,0,0));
+        pos.push_back(lst(2,0,0));
         pos.push_back(lst(2,0,1));
         pos.push_back(lst(2,0,2));
         //NNLO - g q
@@ -111,7 +111,7 @@ public:
         pos.push_back(lst(2,5,2));
         //*/
         //N3LO - g g
-        /*pos.push_back(lst(3,0,0));
+        pos.push_back(lst(3,0,0));
         pos.push_back(lst(3,0,1));
         pos.push_back(lst(3,0,2));
         pos.push_back(lst(3,0,3));

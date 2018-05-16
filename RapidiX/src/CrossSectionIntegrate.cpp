@@ -16,7 +16,7 @@ void CrossSection::ParallelIntegrate()
     vegas.gridsize=100;
     vegas.mineval=10;
     vegas.maxpoints=(vegas.mineval)*vegas.batchsize;
-    vegas.GridExport=false;
+    vegas.GridExport=true;
     vegas.ExportComponents=pos2.size()+2;
     double * chi,*res,*err;
     

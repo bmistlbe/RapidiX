@@ -27,16 +27,16 @@ int main(int argc, const char * argv[]) {
     xs.Setmt(162.7);
     
     //0=off,1=MSB,2=OS
-    xs.SetWilsonCoefficientMode(0);
-    xs.SetPDF(0,"MMHT2014nnlo68cl");
-    //xs.SetPDF(0,"PDF4LHC15_nnlo_100");
+    xs.SetWilsonCoefficientMode(1);
+    //xs.SetPDF(0,"MMHT2014nnlo68cl");
+    xs.SetPDF(0,"PDF4LHC15_nnlo_100");
     xs.SetVerbose(2);
-    xs.SetPrecision(1e-4);
+    xs.SetPrecision(1e-2);
     xs.SetNumThreads(8);
     
     vector<vector<double> > res,err;
     xs.SetOuputFile("Output.txt");
-    //xs.IntegrateCrossSection();
+    xs.IntegrateCrossSection();
     xs.IntegrateDistributions();
         
     return 0;
