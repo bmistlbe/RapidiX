@@ -28,13 +28,15 @@ int main(int argc, const char * argv[]) {
     
     //0=off,1=MSB,2=OS
     xs.SetWilsonCoefficientMode(0);
-    //xs.SetPDF(0,"MMHT2014nnlo68cl");
-    xs.SetPDF(0,"CT14nnlo_as_0118");
+    xs.SetPDF(0,"MMHT2014nnlo68cl");
+    //xs.SetPDF(0,"PDF4LHC15_nnlo_100");
     xs.SetVerbose(2);
     xs.SetPrecision(1e-2);
     
     vector<vector<double> > res,err;
-    xs.IntegrateCrossSection();
+    xs.SetOuputFile("Output.txt");
+    //xs.IntegrateCrossSection();
+    xs.IntegrateDistributions();
         
     return 0;
 }

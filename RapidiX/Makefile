@@ -4,7 +4,7 @@ CC =g++ -g -m64 -fopenmp -O3 -std=c++11 -w
 XS_FILES =$(patsubst ./XS/%.cpp, ./XS/%.o, $(wildcard ./XS/*.cpp))
 
 
-SOURCE= ./src/CrossSection.o ./src/GlobalDefs.o ./src/Higgs.o ./src/Luminosity.o ./src/PDF.o ./src/Vegas.o ./src/Wilson.o
+SOURCE= $(patsubst ./src/%.cpp, ./src/%.o, $(wildcard ./src/*.cpp))
 
 
 XSFILES= $(XS_FILES) 

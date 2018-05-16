@@ -4,15 +4,6 @@
 int N3LOExpansion=-1;
 
 
-vector<int> lst(int a1,int a2,int a3)
-{
-    vector<int>loc(3,0);
-    loc[0]=a1;
-    loc[1]=a2;
-    loc[2]=a3;
-    return loc;
-}
-
 void CrossSection::ComputeDummyVariables()
 {
     Lx11=log(1 - x1);

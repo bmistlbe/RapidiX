@@ -30,6 +30,8 @@ vector<double> Multiply(const vector<double> & a,const vector<double> & b);
 vector<double> Add(const vector<double> & a,const vector<double> & b);
 
 
+vector<int> lst(int a1,int a2,int a3);
+
 
 
 #endif

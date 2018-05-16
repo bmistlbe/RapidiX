@@ -7,11 +7,10 @@
 
 #include "GlobalDefs.h"
 #include "PDF.h"
+#include "Histogram.h"
 #include "Luminosity.h"
 #include "Wilson.h"
 #include "Vegas.h"
-
-vector<int> lst(int a1,int a2,int a3);
 
 extern int N3LOExpansion;
 class CrossSection{
@@ -44,8 +43,14 @@ public:
     void SetNNLO();
     void SetN3LO();
     
+    string ResultFile;
+    Histogramer Histopheles;
+    int RandomSeedOffset;
+    
     CrossSection()
     {
+        ResultFile="Output.txt";
+        RandomSeedOffset=0;
         MCPrecision=1e-3;
         Lfr=0;
         L=0;
@@ -158,6 +163,7 @@ public:
     };
     
     void Integrate();
+    void ParallelIntegrate();
     void ComputeDummyVariables();
     double ComputeTotalXS(const vector<vector<double > > & vec);
     vector<vector<double> >  Evaluate(double xx1,double xx2,double bound1,double bound2,double Jac);
@@ -165,5 +171,6 @@ public:
 };
 
 int Integrand(const double * xx,double * ff,const void * userdata,double * ExportData);
+int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double * ExportData);
 
 #endif

@@ -1,32 +1,55 @@
 #include "../includes/Vegas.h"
 
 std::random_device rd;
-std::mt19937 mt(0);
-std::uniform_real_distribution<double> myrand(0, 1.0);
+
+
+void VegasIntegrator::SetRandomSeed(int ranseed)
+{
+    mt=std::mt19937(ranseed+rd());
+    //cout<<"First Rand: "<<myrand(mt)<<endl;
+    return;
+}
+
+//Average the Bins
+void AverageDistribution(vector<double> & dist)
+{
+    vector<double> newdist=dist;
+    for(int i=2;i<dist.size()-2;++i)
+        dist[i]=(newdist[i-2]+newdist[i-1]+newdist[i]+newdist[i+1]+newdist[i+5])/5.0;
+    return;
+}
 
 //Get the bin number of the grid with gridnr to which the point belongs
 int VegasIntegrator::GetBin(const double & point,const int & gridnr)
 {
-    for(int i=0;i<gridsize;++i)
+    for(int i=1;i<gridsize;++i)
         if(point<grid_lowerbounds[gridnr][i])
             return i-1;
+    return gridsize-1;
+}
+
+int VegasIntegrator::GetBin(const double & point,const double * upperbounds)
+{
+    for(int i=0;i<gridsize;++i)
+        if(point<upperbounds[i])
+            return i;
     return 0;
 }
 
-//Compute a random point according to the grid with gridnr from a flat random number why and also store the bin of the grid in bin.
+//Compute a random point according to the grid with gridnr from a flat random number y and also store the bin of the grid in bin.
 double VegasIntegrator::InverseGrid(const int & gridnr,const double & y,int & bin)
 {
     
-    double cumulant=0;
+    double cumulant=0.0;
     for(int i=0;i<gridsize;++i)
     {
-        if(cumulant+Distribution[gridnr][i]*(grid_upperbounds[gridnr][i]-grid_lowerbounds[gridnr][i])<y)
+        if(cumulant+1.0/(double)gridsize<y)
         {
-            cumulant+=Distribution[gridnr][i]*(grid_upperbounds[gridnr][i]-grid_lowerbounds[gridnr][i]);
+            cumulant+=1.0/(double)gridsize;
             continue;
         }
         bin=i;
-        return (y-cumulant)/Distribution[gridnr][i]+grid_lowerbounds[gridnr][i];
+        return (y-cumulant)*(grid_upperbounds[gridnr][i]-grid_lowerbounds[gridnr][i])*gridsize+grid_lowerbounds[gridnr][i];
     }
     return 0;
 }
@@ -36,106 +59,90 @@ double VegasIntegrator::InverseGrid(const int & gridnr,const double & y,int & bi
 void VegasIntegrator::GetSinglePoint(double * point,int * bins)
 {
     for(int j=0;j<dimension;++j)
+    {
         point[j]=InverseGrid(j,myrand(mt),bins[j]);
+    }
     return;
 }
+
 
 //Generate Random Numbers according to Grids
 void VegasIntegrator::GetPoints(const int & numpoints,double ** points, int ** bins)
 {
-
-//#pragma omp for
-    for(int i=0;i<numpoints;++i)
-    {
+    int i;
+    int c=0;
+//#pragma omp parallel for private(i) schedule(dynamic)
+    for( i=0;i<numpoints;++i)
         for(int j=0;j<dimension;++j)
         {
             points[i][j]=InverseGrid(j,myrand(mt),bins[i][j]);
+            
+            //Technical Cut
+            if(points[i][j]<1e-8||points[i][j]>(1-1e-8))
+            {
+                j--;
+                c++;
+            }
         }
-    }
+    if(c>numpoints/100.0)
+        cout<<"Hit the technical cut in more than a percent of all Vegas points \vec{x}."<<endl;
     return;
 }
 
-void VegasIntegrator::GridAdapt()
+
+//Update the the current grid given the data and xval vectors.
+void VegasIntegrator::UpdateGrid(const vector<double> & xval, const vector<double> & fval, double * LowerBounds, double * UpperBounds)
 {
     int i,j;
-    for(i=0;i<dimension;++i)
-    {
-        if(GridIntegralSum[i]==0)
-            continue;
+    vector<double> hist(gridsize,0);
 
-        double newdown[gridsize];
-        double newup[gridsize];
-        for(j=0;j<gridsize;j++)
+    //Create positive definite Histogram
+    for(i=0;i<fval.size();++i)
+    {
+        hist[GetBin(xval[i],UpperBounds)]+=fval[i];
+    }
+    for(i=0;i<hist.size();++i)
+        hist[i]=fabs(hist[i]);
+    //AverageDistribution(hist);
+    
+    
+    
+    //Create CDF - normalise
+    double totxs=0;
+    for(int i=0;i<hist.size();++i)
+        totxs+=hist[i];
+    for(int i=0;i<hist.size();++i)
+        hist[i]*=1.0/totxs/(UpperBounds[i]-LowerBounds[i]);
+    double target=1.0/((double)gridsize);
+    
+    //Adjust to new Histogram
+    double pos=0;
+    double content=0;
+    int c=0,d=1;
+    while(d<gridsize)
+    {
+        if(content+(UpperBounds[c]-pos)*hist[c]<target)
         {
-            newdown[j]=0;
-            newup[j]=1;
-        }
-        int currbin=0;
-        double locint=0;
-        
-        for(j=0;j<gridsize-1;++j)
-        {
-            if(newdown[j]>grid_lowerbounds[i][currbin])
-            {
-                //cout<<"if1"<<endl;
-                if(locint+fabs(GridIntegral[i][currbin]*(grid_upperbounds[i][currbin]-newdown[j])/(grid_upperbounds[i][currbin]-grid_lowerbounds[i][currbin]))<GridIntegralSum[i]/(double)gridsize)
-                {
-                    //cout<<"1"<<endl;
-                    locint+=fabs(GridIntegral[i][currbin]*(grid_upperbounds[i][currbin]-newdown[j])/(grid_upperbounds[i][currbin]-grid_lowerbounds[i][currbin]));
-                    currbin++;
-                    j--;
-                    continue;
-                }
-            }
-            else
-            {
-                //cout<<"else1"<<endl;
-                if(locint+fabs(GridIntegral[i][currbin])<GridIntegralSum[i]/(double)gridsize)
-                {
-                    //cout<<"2"<<endl;
-                    locint+=fabs(GridIntegral[i][currbin]);
-                    currbin++;
-                    j--;
-                    continue;
-                }
-            }
-            if(newdown[j]>grid_lowerbounds[i][currbin])
-            {
-                //cout<<"3"<<endl;
-                newup[j]=(GridIntegralSum[i]/(double)gridsize-locint)/fabs(GridIntegral[i][currbin])*(grid_upperbounds[i][currbin]-grid_lowerbounds[i][currbin])+newdown[j];
-                locint=0;
-            }
-            else
-            {
-                //cout<<"4 "<<locint<<endl;
-                 newup[j]=(GridIntegralSum[i]/(double)gridsize-locint)/fabs(GridIntegral[i][currbin])*(grid_upperbounds[i][currbin]-grid_lowerbounds[i][currbin])+grid_lowerbounds[i][currbin];
-                locint=0;
-            }
-            if(j<gridsize-1)
-                newdown[j+1]=newup[j];
-            //cout<<"new: "<<newdown[j]<<"  "<<newup[j]<<endl;
+            content+=(UpperBounds[c]-pos)*hist[c];
+            pos=UpperBounds[c];
+            c++;
             continue;
         }
-        for(j=0;j<gridsize;j++)
+        else
         {
-            grid_lowerbounds[i][j]=newdown[j];
-            grid_upperbounds[i][j]=newup[j];
-            GridIntegral[i][j]=GridIntegralSum[i]/(double)gridsize;
+            LowerBounds[d]=(target-content)/hist[c]+pos;
+            pos=LowerBounds[d];
+            d++;
+            content=0;
+            continue;
         }
     }
-    //Update Sampling Distribution
-    for(i=0;i<dimension;++i)
-        for(j=0;j<gridsize;++j)
-            Distribution[i][j]=1/(double)gridsize/(grid_upperbounds[i][j]-grid_lowerbounds[i][j]);
-    
-    /*cout<<"New Grid: "<<endl;
-    for(i=0;i<gridsize;++i)
-    {
-        cout<<i<<": "<<grid_lowerbounds[0][i]<<" - "<<grid_upperbounds[0][i]<<" Integral in Bin: "<<GridIntegral[0][i]<<endl;
-    }
-    //*/
+    for(i=0;i<gridsize-1;++i)
+        UpperBounds[i]=LowerBounds[i+1];
+
     return;
 }
+
 
 void VegasIntegrator::PerformSampling(int (*f)(const double * xx,double * ff,const void * userdata,double * ExportData),const int & numpoints,double * results,double * variances,const void * userdata)
 {
@@ -151,136 +158,129 @@ void VegasIntegrator::PerformSampling(int (*f)(const double * xx,double * ff,con
         function_value[i]=new double[components];
     }
     this->GetPoints(numpoints,points,bins);
-    
+
     //Compute Weights for every point
     double * weights=new double [numpoints];
-    //#pragma omp parallel for private(i)
+//#pragma omp parallel for private(i) schedule(dynamic)
     for(i=0;i<numpoints;++i)
         for(j=0;j<dimension;++j)
         {
             if(j==0)
-                weights[i]=1;
-            weights[i]*=1.0/Distribution[j][bins[i][j]];
+                weights[i]=1.0/(double)numpoints;
+            weights[i]*=gridsize*(grid_upperbounds[j][bins[i][j]]-grid_lowerbounds[j][bins[i][j]]);
         }
-    
+
     StoredExportData.clear();
     StoredExportData.resize(numpoints,0);
     
-    //#pragma omp parallel for private(i)
+//Could be parallelised if the function called is parallelisable.
     for(i=0;i<numpoints;++i)
     {
-        //cout << "Evaluating Integrand: " << i/(double)numpoints*100.0 << "%\r" << std::flush;
+        //Set the data vector to zero. This part could be done smarter.
         if(ExportComponents!=0)
         {
             StoredExportData[i]=new double [ExportComponents];
             for(int k=0;k<ExportComponents;++k)
                 StoredExportData[i][k]=0;
         }
+        
         while(true)
         {
             f(points[i],function_value[i],userdata,StoredExportData[i]);
+            //If the function returns an infinite value retry another point.
+            //That should'nt happen too ofton to maintain statistical meaning of stuff.
+            if(fabs(function_value[i][0])>1e20)
+                cout<<"Very Large Point (VLP) detected!"<<endl;
+            
             if(std::isnan((double)function_value[i][0])||std::isinf(function_value[i][0]))
             {
-                //cout<<"Infinity!"<<endl;
+                cout<<"Another Point!"<<endl;
                 GetSinglePoint(points[i],bins[i]);
             }
             else
                 break;
         }
-        
+        //Give back the Vegas weight for the Export data.
         if(ExportComponents!=0)
-            StoredExportData[i][0]=weights[i]/(double)numpoints;
+            StoredExportData[i][0]=weights[i];
     }
     
-    
+
     //Compute Integral and Variance
     for(i=0;i<components;++i)
     {
         results[i]=0;
         variances[i]=0;
     }
-    //#pragma omp parallel for private(j)
+//#pragma omp parallel for private(j) schedule(dynamic)
     for(j=0;j<components;++j)
     {
         for(i=0;i<numpoints;++i)
         {
-            results[j]+=function_value[i][j]*weights[i]/(double)numpoints;
-            variances[j]+=pow(function_value[i][j]*weights[i],2)/(double)numpoints;
+            //cout<<"w:"<<weights[i]<<" x: "<<points[i][0]<<" f: "<<function_value[i][0]<<endl;
+            results[j]+=function_value[i][j]*weights[i];
+            variances[j]+=pow(function_value[i][j],2)*weights[i];
         }
     }
     for(i=0;i<components;++i)
         variances[i]=fabs(variances[i]-results[i]*results[i])/(double)(numpoints-1);
     
+    
+    
+    
     //Adapt integration Grids
     if(adapt)
     {
-        //cout<<"Adapt!"<<endl;
-        //Compute Integral per Grid Bin of this iteration
-        double ** LocGridIntegral=new double * [dimension];
-        double * LocGridIntegralSum=new double [dimension];
-        for(i=0;i<dimension;++i)
+        vector<double> LocNewValues(numpoints,0);
+        vector<vector<double> > LocNewPoints(dimension,vector<double>(numpoints,0));
+        for(i=0;i<numpoints;++i)
         {
-            LocGridIntegralSum[i]=0;
-            LocGridIntegral[i]=new double [gridsize];
-            for(j=0;j<gridsize;++j)
-                LocGridIntegral[i][j]=0;
+            LocNewValues[i]=function_value[i][0]*weights[i];
+//            if(fabs(function_value[i][0])>1e20)
+//            {
+//                cout<<"Ignoring Point!"<<endl;
+//                LocNewValues[i]=0;
+//            }
+            
+            for(j=0;j<dimension;++j)
+                LocNewPoints[j][i]=points[i][j];
         }
         
-        
-        //        //#pragma omp parallel for private(j)
-        //        for(j=0;j<dimension;++j)
-        //        {
-        //            for(i=0;i<numpoints;++i)
-        //            {
-        //                LocGridIntegral[j][bins[i][j]]+=fabs(function_value[i][0]*weights[i])/(double)numpoints;
-        //                LocGridIntegralSum[j]+=fabs(function_value[i][0]*weights[i])/(double)numpoints;
-        //            }
-        //        }
-        
-        //#pragma omp parallel for private(j)
-        for(j=0;j<dimension;++j)
-            for(i=0;i<numpoints;++i)
-                LocGridIntegral[j][bins[i][j]]+=function_value[i][0]*weights[i]/(double)numpoints;
-        for(j=0;j<dimension;++j)
-            for(i=0;i<gridsize;++i)
-            {
-                LocGridIntegral[j][i]=fabs(LocGridIntegral[j][i]);
-                LocGridIntegralSum[j]+=LocGridIntegral[j][i];
-            }
-        
-        
-        //Update Grid Integrals
-        //#pragma omp parallel for private(i)
-        for(i=0;i<dimension;++i)
+        //Reset the grids for the first 5 iterations then accumulate data
+        if(totpoints/numpoints<7)
         {
-            for(j=0;j<gridsize;++j)
-                GridIntegral[i][j]=(GridIntegral[i][j]*totpoints+LocGridIntegral[i][j]*numpoints)/(double)(numpoints+totpoints);
-            GridIntegralSum[i]=(GridIntegralSum[i]*totpoints+numpoints*LocGridIntegralSum[i])/(double)(numpoints+totpoints);
+            GridSamplingValues.clear();
+            for(j=0;j<dimension;++j)
+                GridSamplingPoints[j].clear();
         }
         
-        //Adapt
-        GridAdapt();
+        GridSamplingValues.insert(GridSamplingValues.end(),LocNewValues.begin(),LocNewValues.end());
+        for(j=0;j<dimension;++j)
+            GridSamplingPoints[j].insert(GridSamplingPoints[j].end(),LocNewPoints[j].begin(),LocNewPoints[j].end());
         
-        //Delete Allocated Arrays
-        for(i=0;i<dimension;++i)
-            delete LocGridIntegral[i];
-        delete LocGridIntegral;
-        delete LocGridIntegralSum;
+//#pragma omp parallel for private(i) schedule(dynamic)
+        for(int i=0;i<dimension;++i)
+        {
+            //adjust twice, binning sucks.
+            for(int j=0;j<5;++j)
+                UpdateGrid(GridSamplingPoints[i],GridSamplingValues,grid_lowerbounds[i],grid_upperbounds[i]);
+        }
     }
-    
+
+    //well:
     totpoints+=numpoints;
     
     //Delete allocated doubles
     for(i=0;i<numpoints;++i)
     {
-        delete points[i];
-        delete bins[i];
-        delete function_value[i];
+        delete[] points[i];
+        delete[] bins[i];
+        delete[] function_value[i];
     }
-    delete points;
-    delete bins;
-    delete function_value;
-    delete weights;
+    delete[] points;
+    delete[] bins;
+    delete[] function_value;
+    delete[] weights;
     return;
     
 }
@@ -289,27 +289,19 @@ void VegasIntegrator::PerformSampling(int (*f)(const double * xx,double * ff,con
 void VegasIntegrator::InitiateIntegrationGrids()
 {
     if(verbose)
-        cout<<"Initiating flat Grids!"<<endl;
+        cout<<"Initiating flat Grids of size: "<<gridsize<<"!"<<endl;
     
     grid_lowerbounds=new double * [dimension];
     grid_upperbounds=new double * [dimension];
-    GridIntegral=new double * [dimension];
-    Distribution=new double * [dimension];
-    GridIntegralSum=new double  [dimension];
     
     for(int i=0;i<dimension;++i)
     {
-        GridIntegralSum[i]=0;
         grid_lowerbounds[i]=new double [gridsize];
         grid_upperbounds[i]=new double [gridsize];
-        GridIntegral[i]=new double [gridsize];
-        Distribution[i]=new double [gridsize];
         for(int j=0;j<gridsize;++j)
         {
             grid_lowerbounds[i][j]=j/(double)gridsize;
             grid_upperbounds[i][j]=(j+1)/(double)gridsize;
-            GridIntegral[i][j]=0;
-            Distribution[i][j]=1.0;
         }
     }
     return;
@@ -320,8 +312,7 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
 {
     StoredIntegrals.clear();
     StoredErrors.clear();
-    
-    mt=std::mt19937(randseed+rd());
+
     int c=0;
     int i,j;
     
@@ -330,6 +321,10 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
     totpoints=0;
     
     StoredExportData.clear();
+    GridSamplingValues.clear();
+    GridSamplingPoints.clear();
+    GridSamplingPoints.resize(dimension,vector<double>(0));
+    
     //Initiate Output Variables
     integral=new double[components];
     error=new double[components];
@@ -340,9 +335,8 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
         error[i]=1;
         chisq[i]=0;
     }
-    
     InitiateIntegrationGrids();
-    adapt=true;
+    //adapt=true;
     
     //Initial Sampling
     double * res=new double [components];
@@ -351,9 +345,12 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
     delete var;
     delete res;
     vector<double *> variances,integrals;
-    if(verbose>=1)
+    
+    if(verbose==1)
         cout<<"Initial Sampling done!"<<endl;
-    vector<double > vs;
+    
+    
+    //Start to integrate until you hit the target precision!
     while(true)
     {
         c++;
@@ -362,8 +359,8 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
         this->PerformSampling(f,batchsize,res,var,userdata);
         variances.push_back(var);
         integrals.push_back(res);
-        vs.push_back(var[0]*(batchsize-1)+res[0]*res[0]);
-        //cout<<"This integration gave me "<<res[0]<<" +- "<<sqrt(var[0])<<" +- "<<sqrt(var[0])/res[0]*100<<" % "<<endl;
+        
+        //cout<<"This Iteration gave: "<<res[0]<<" +- "<<sqrt(var[0])<<" +- "<<sqrt(var[0])/res[0]*100 <<" %"<<endl;
         
         if(c==mineval)
         {
@@ -372,8 +369,11 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
             variances.push_back(var);
             integrals.push_back(res);
             adapt=false;
-            if(verbose>=1)
+            if(verbose==1)
                 cout<<endl<<"!!!!! MinEval Done! Starting Serious Integration !!!!!"<<endl<<endl;
+            GridSamplingValues.clear();
+            GridSamplingPoints.clear();
+            GridSamplingPoints.resize(dimension,vector<double>(0));
         }
         
         for(i=0;i<components;++i)
@@ -382,7 +382,6 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
             integral[i]=0;
             chisq[i]=0;
         }
-        
         //Original Lepage Variance:
         for(i=0;i<components;++i)
         {
@@ -397,10 +396,14 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
                 chisq[i]+=pow(integral[i]-integrals[j][i],2)/variances[j][i];
         }
         
-        stringstream ss;
-        ss<<"VegasGrids/Step"<<c<<".txt";
+        //Export Sampling Grids
         if(GridExport)
+        {
+            stringstream ss;
+            ss<<"VegasGrids/Step"<<c<<".txt";
             ExportGrids(ss.str());
+        }
+        
         if(verbose>=1)
             cout<<"Integral: "<<integral[0]<<" +- "<<error[0]<<" +- "<<fabs(error[0]/integral[0])*100<<" % ChiSq: "<<chisq[0]/(double)integrals.size()<<" Number of Points: "<<totpoints<<" Iteration: "<<c<<endl;
         if(fabs(error[0]/integral[0])<precision&&c>mineval)
@@ -409,7 +412,8 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
             break;
         if(totpoints>maxpoints)
             break;
-        
+
+            
     }
     StoredIntegrals.push_back(integral[0]);
     StoredErrors.push_back(error[0]);
@@ -421,7 +425,6 @@ int VegasIntegrator::Integrate(int (*f)(const double * xx,double * ff,const void
 int VegasIntegrator::ContinueIntegrate(int (*f)(const double * xx,double * ff,const void * userdata,double * ExportData),double * & integral,double * & error,double * & chisq,const void *userdata)
 {
     StoredExportData.clear();
-    mt=std::mt19937(randseed+rd());
     int c=0;
     int i,j;
     
@@ -462,9 +465,9 @@ int VegasIntegrator::ContinueIntegrate(int (*f)(const double * xx,double * ff,co
     error[0]=locerr;
     chisq[0]=locchisq;
     
-    //cout<<"Integral: "<<integral[0]<<" +- "<<error[0]/integral[0]*100<<" % ChiSq: "<<chisq[0]<<" Number of Points: "<<batchsize<<endl;
     return 0;
 }
+
 
 void VegasIntegrator::ExportGrids(string file)
 {
@@ -588,7 +591,6 @@ void VegasIntegrator::ImportGrids(string file)
         {
             grid_lowerbounds[i][j]=low[i][j];
             grid_upperbounds[i][j]=high[i][j];
-            Distribution[i][j]=1/(double)gridsize/(grid_upperbounds[i][j]-grid_lowerbounds[i][j]);
         }
     }
     return;

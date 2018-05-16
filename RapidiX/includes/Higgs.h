@@ -72,10 +72,13 @@ public:
     void SetPDF(int mem,string set){PDFMember=mem;PDFSet=set;integrated=false;return;};
     void SetVerbose(int v){MCVerbose=v;return;};
     void SetPrecision(double prec){MCPrecision=prec;return;};
+    void SetResultFile(string file){xs.ResultFile=file;return;};
+    void SetOuputFile(string file){xs.ResultFile=file;return;};
     
     
     //Do Stuff
     void IntegrateCrossSection();
+    void IntegrateDistributions();
 
 
 };

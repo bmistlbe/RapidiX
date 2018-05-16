@@ -20,23 +20,19 @@
 #include <stdio.h>
 #include <random>
 
-extern std::random_device rd;
-extern std::mt19937 mt;
-extern std::uniform_real_distribution<double> myrand;
+
 //#include "OMP.h"
 
 
 using namespace std;
 
+void AverageDistribution(vector<double> & dist);
 
 class VegasIntegrator{
 private:
 public:
     double ** grid_lowerbounds;
     double ** grid_upperbounds;
-    double ** GridIntegral;
-    double ** Distribution;
-    double * GridIntegralSum;
     
     
     int randseed;
@@ -65,15 +61,17 @@ public:
     vector<double> StoredIntegrals;
     vector<double> StoredErrors;
     
+    vector<double> GridSamplingValues;
+    vector<vector<double> > GridSamplingPoints;
+    
+    //std::random_device rd;
+    std::mt19937 mt;
+    std::uniform_real_distribution<double> randor;
+    
     VegasIntegrator(){
         randseed=0;
         grid_lowerbounds=0;
         grid_upperbounds=0;
-        GridIntegral=0;
-        Distribution=0;
-        GridIntegralSum=0;
-        
-        srand (time(NULL));
         
         adapt=true;
         mineval=10;
@@ -87,22 +85,44 @@ public:
         maxpoints=1e9;
         startsize=5000;
         batchsize=1000;
-        GridExport=false;
+        GridExport=true;
         gridsize=100;
         
         ExportComponents=0;
         ExportFile="dump.txt";
         
         
+        srand (time(NULL));
+        mt=std::mt19937(rand()+time(NULL));
+        randor=std::uniform_real_distribution<double>(0,1);
     };
-
-    
+    ~VegasIntegrator()
+    {
+        if(grid_lowerbounds!=0)
+        {
+            for(int i=0;i<dimension;++i)
+            {
+                delete grid_lowerbounds[i];
+                delete grid_upperbounds[i];
+            }
+            delete grid_lowerbounds;
+            delete grid_upperbounds;
+        }
+    }
+    double myrand(mt19937 & mm)
+    {
+        return randor(mm);
+        //return rand()/(double)RAND_MAX;
+    }
+    //Set Random Number Seed
+    void SetRandomSeed(int ranseed);
     
     //Initiate Flat Distributions for Integration
     void InitiateIntegrationGrids();
     
     //Get the bin number of the grid with gridnr to which the point belongs
     int GetBin(const double & point,const int & gridnr);
+    int GetBin(const double & point,const double * upperbounds);
     
     //Compute a random point according to the grid with gridnr from a flat random number why and also store the bin of the grid in bin.
     double InverseGrid(const int & gridnr,const double & y,int & bin);
@@ -112,7 +132,7 @@ public:
     void GetSinglePoint(double * point,int * bins);
     
     //Adjust the importance sampling distributions according to the previous integrations.
-    void GridAdapt();
+    void UpdateGrid(const vector<double> & xval, const vector<double> & fval, double * LowerBounds, double * UpperBounds);
     
     //Sample the Integrand and compute Integral and Variance of one iteration
     void PerformSampling(int (*f)(const double * xx,double * ff,const void * userdata,double * ExportData),const int & numpoints,double * results,double * variances,const void * userdata);
