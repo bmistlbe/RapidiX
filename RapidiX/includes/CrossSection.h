@@ -28,7 +28,7 @@ public:
     double Lfr;
     double pref;
     vector<double> WC;
-    Luminosity * Lumi;
+    Luminosity Lumi;
     
     vector<vector<double> > xs,error;
     vector<vector<vector<double> > > zero;
@@ -38,6 +38,7 @@ public:
     
     double MCPrecision;
     int MCVerbose;
+    int NrThreads;
     
     void SetCoefs();
     void SetNNLO();
@@ -49,6 +50,7 @@ public:
     
     CrossSection()
     {
+        NrThreads=8;
         ResultFile="Output.txt";
         RandomSeedOffset=0;
         MCPrecision=1e-3;

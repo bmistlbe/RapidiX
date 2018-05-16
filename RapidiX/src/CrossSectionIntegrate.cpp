@@ -27,7 +27,7 @@ void CrossSection::ParallelIntegrate()
 
     
     vegas.batchsize=1e5;
-    int num_threads=1;
+    int num_threads=NrThreads;
     vector<VegasIntegrator> Integrators(num_threads);
     for(int i=0;i<Integrators.size();i++)
     {
@@ -41,7 +41,9 @@ void CrossSection::ParallelIntegrate()
     vector<CrossSection> myxs(num_threads);
 #pragma omp parallel for private(i)
     for( i=0;i<myxs.size();i++)
+    {
         myxs[i]=(*this);
+    }
         
     double error=0;
     double integral=0;

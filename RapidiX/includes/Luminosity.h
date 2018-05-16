@@ -15,7 +15,7 @@ private:
 public:
     
     
-    PDFF pdf;
+    PDFF * pdf;
     double pdfvals[2][12];
     double L[6];
     double Lgg00;

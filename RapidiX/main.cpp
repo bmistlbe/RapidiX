@@ -31,7 +31,8 @@ int main(int argc, const char * argv[]) {
     xs.SetPDF(0,"MMHT2014nnlo68cl");
     //xs.SetPDF(0,"PDF4LHC15_nnlo_100");
     xs.SetVerbose(2);
-    xs.SetPrecision(1e-2);
+    xs.SetPrecision(1e-4);
+    xs.SetNumThreads(8);
     
     vector<vector<double> > res,err;
     xs.SetOuputFile("Output.txt");

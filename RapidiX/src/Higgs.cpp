@@ -4,12 +4,12 @@ void Higgs::IntegrateCrossSection()
 {
     
     //PDF stuff
-    Lumi.pdf.InitiatePDF(PDFSet,PDFMember);
-    Lumi.pdf.SetMZ(mZ);
-    Lumi.pdf.SetMT(mt);
-    Lumi.pdf.SetMuf(muf);
-    //Lumi.pdf.CreateGrid(muf);
-    ar=Lumi.pdf.GetAlpha(mur)/Pi;
+    Lumi.pdf->InitiatePDF(PDFSet,PDFMember);
+    Lumi.pdf->SetMZ(mZ);
+    Lumi.pdf->SetMT(mt);
+    Lumi.pdf->SetMuf(muf);
+    //Lumi.pdf->CreateGrid(muf);
+    ar=Lumi.pdf->GetAlpha(mur)/Pi;
     
     //Parameters
     xs.Lfr=2*log(muf/mur);
@@ -24,7 +24,7 @@ void Higgs::IntegrateCrossSection()
     //Wilson Coefficient
     double topmass=mt;
     if(WCMode==1)
-        topmass=Lumi.pdf.GetMT(mur);
+        topmass=Lumi.pdf->GetMT(mur);
     xs.WC=WilsonCoeff(topmass,mur,WCMode);
     
     
@@ -52,12 +52,12 @@ void Higgs::IntegrateDistributions()
 {
     
     //PDF stuff
-    Lumi.pdf.InitiatePDF(PDFSet,PDFMember);
-    Lumi.pdf.SetMZ(mZ);
-    Lumi.pdf.SetMT(mt);
-    Lumi.pdf.SetMuf(muf);
-    //Lumi.pdf.CreateGrid(muf);
-    ar=Lumi.pdf.GetAlpha(mur)/Pi;
+    Lumi.pdf->InitiatePDF(PDFSet,PDFMember);
+    Lumi.pdf->SetMZ(mZ);
+    Lumi.pdf->SetMT(mt);
+    Lumi.pdf->SetMuf(muf);
+    //Lumi.pdf->CreateGrid(muf);
+    ar=Lumi.pdf->GetAlpha(mur)/Pi;
     
     //Parameters
     xs.Lfr=2*log(muf/mur);
@@ -72,7 +72,7 @@ void Higgs::IntegrateDistributions()
     //Wilson Coefficient
     double topmass=mt;
     if(WCMode==1)
-        topmass=Lumi.pdf.GetMT(mur);
+        topmass=Lumi.pdf->GetMT(mur);
     xs.WC=WilsonCoeff(topmass,mur,WCMode);
     
     

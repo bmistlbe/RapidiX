@@ -105,7 +105,7 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
     x2=xx2;
     ComputeDummyVariables();
     
-    Lumi->SetLuminosity(x1,x2,bound1,bound2);
+    Lumi.SetLuminosity(x1,x2,bound1,bound2);
     vector<vector<vector<double> > > values=zero;
     SetCoefs();
     
@@ -114,20 +114,20 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
     {
         if(pos[i][1]==0)
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=
-            XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi->L[pos[i][1]]
-            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][2]*Lumi->Lgg10
-            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][1]*Lumi->Lgg01
-            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][3]*Lumi->Lgg00;
+            XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]]
+            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][2]*Lumi.Lgg10
+            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][1]*Lumi.Lgg01
+            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][3]*Lumi.Lgg00;
         else if(pos[i][1]==1)
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=
-            XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi->L[pos[i][1]]
-            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][2]*Lumi->Lqg10;
+            XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]]
+            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][2]*Lumi.Lqg10;
         else if(pos[i][1]==2)
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=
-            XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi->L[pos[i][1]]
-            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][1]*Lumi->Lgq01;
+            XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]]
+            +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][1]*Lumi.Lgq01;
         else
-            values[pos[i][0]][pos[i][1]][pos[i][2]]+=XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi->L[pos[i][1]];
+            values[pos[i][0]][pos[i][1]][pos[i][2]]+=XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]];
         
         values[pos[i][0]][pos[i][1]][pos[i][2]]*=Jac*pow(ar,pos[i][0])*pow(L,pos[i][2]);
         

@@ -42,6 +42,7 @@ public:
     
     Higgs()
     {
+        Lumi.pdf=new PDFF;
         integrated=false;
         
         WCMode=1;
@@ -56,7 +57,7 @@ public:
         conversion=3.893793656e8;
         Gf=1.16637/100000.0;
         Born=Gf/sqrt(2.0)/288.0/Pi*conversion;
-        xs.Lumi=&Lumi;
+        xs.Lumi=Lumi;
         
         MCPrecision=1e-3;
         MCVerbose=1;
@@ -74,6 +75,7 @@ public:
     void SetPrecision(double prec){MCPrecision=prec;return;};
     void SetResultFile(string file){xs.ResultFile=file;return;};
     void SetOuputFile(string file){xs.ResultFile=file;return;};
+    void SetNumThreads(int nrth){xs.NrThreads=nrth;return;};
     
     
     //Do Stuff

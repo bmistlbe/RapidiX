@@ -11,18 +11,18 @@ double Luminosity::GetPDFValue(int parton,int side,bool limit)
 
 void Luminosity::StorePDFValues(double x1,double x2,double lb1,double lb2)
 {
-    pdfvals[0][0]=pdf.GetValue(lb1,0);
-    pdfvals[1][0]=pdf.GetValue(lb2,0);
+    pdfvals[0][0]=pdf->GetValue(lb1,0);
+    pdfvals[1][0]=pdf->GetValue(lb2,0);
     
     for(int i=-5;i<=5;++i)
     {
         if(x1>lb1){
-            pdfvals[0][6+i]=pdf.GetValue(lb1/x1,i);}
+            pdfvals[0][6+i]=pdf->GetValue(lb1/x1,i);}
         else{
             pdfvals[0][6+i]=0;}
         
         if(x2>lb2){
-            pdfvals[1][6+i]=pdf.GetValue(lb2/x2,i);}
+            pdfvals[1][6+i]=pdf->GetValue(lb2/x2,i);}
         else{
             pdfvals[1][6+i]=0;}
     }
