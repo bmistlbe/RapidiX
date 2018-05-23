@@ -27,17 +27,31 @@ int main(int argc, const char * argv[]) {
     xs.Setmt(162.7);
     
     //0=off,1=MSB,2=OS
-    xs.SetWilsonCoefficientMode(1);
+    xs.SetWilsonCoefficientMode(0);
     //xs.SetPDF(0,"MMHT2014nnlo68cl");
     xs.SetPDF(0,"PDF4LHC15_nnlo_100");
     xs.SetVerbose(2);
-    xs.SetPrecision(1e-2);
+    xs.SetPrecision(1e-3);
     xs.SetNumThreads(8);
     
     vector<vector<double> > res,err;
-    xs.SetOuputFile("Output.txt");
-    xs.IntegrateCrossSection();
-    xs.IntegrateDistributions();
+    //xs.IntegrateCrossSection();
+    
+    vector<int *> zbpowvec={&delcoefm2,&delcoefm1,&delcoef0,&delcoef1,&delcoef2,&delcoef3,&delcoef4};
+    stringstream ss;
+    for(int i=6;i<zbpowvec.size();++i)
+    {
+        for(int j=0;j<zbpowvec.size();++j)
+            if(j>i)
+                (*zbpowvec[j])=0;
+            else
+                (*zbpowvec[j])=1;
+        
+        ss.str("");
+        ss<<"Results/Distributions_zb"<<i<<".txt";
+        xs.SetOuputFile(ss.str());
+        xs.IntegrateDistributions();
+    }
         
     return 0;
 }

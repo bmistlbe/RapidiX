@@ -3,6 +3,8 @@
 
 double Pi=3.1415926535897932;
 
+int delcoefm2=1;
+int delcoefm1=1;
 int delcoef0=1;
 int delcoef1=1;
 int delcoef2=1;
