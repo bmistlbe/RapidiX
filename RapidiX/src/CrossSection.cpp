@@ -44,11 +44,114 @@ void CrossSection::ComputeDummyVariables()
     x29=pow(x2,9);
     x110=pow(x1,10);
     x210=pow(x2,10);
+    x111=pow(x1,11);
+    x211=pow(x2,11);
+    x112=pow(x1,12);
+    x212=pow(x2,12);
+    x113=pow(x1,13);
+    x213=pow(x2,13);
+    x114=pow(x1,14);
+    x214=pow(x2,14);
+    x115=pow(x1,15);
+    x215=pow(x2,15);
+    x116=pow(x1,16);
+    x216=pow(x2,16);
+    x117=pow(x1,17);
+    x217=pow(x2,17);
+    x118=pow(x1,18);
+    x218=pow(x2,18);
+    x119=pow(x1,19);
+    x219=pow(x2,19);
+    x120=pow(x1,20);
+    x220=pow(x2,20);
+
+    
+    LogNNLO1=log(1 + 2*x1);
+    LogNNLO2=log(x1);
+    LogNNLO3=log(1 + 2*x2);
+    LogNNLO4=log(1 - x1*x2);
+    LogNNLO5=log(x2);
+    LogNNLO6=log(x1 + x2);
+    LogNNLO7=log(1 + x1*x2);
+    LogNNLO8=log(pow(-x1 + x2,2));
+    
+    
+    GNNLO1=HPL(0,1.,-2.*x1);
+    GNNLO2=HPL(0,1.,pow(x1,2));
+    GNNLO3=HPL(0,1.,(2.*pow(x1,2))/(1. + x1));
+    GNNLO4=HPL(0,1.,(-4.*x1)/pow(1. - 1.*x1,2));
+    GNNLO5=HPL(0,1.,1. - 1.*x1);
+    GNNLO6=HPL(0,1.,(-1.*(1. - 1.*x1)*(1. + x1))/(x1*(x1 + x2)));
+    GNNLO7=HPL(0,1.,(-1.*(-1.*x1 + x2))/(x1 + x2));
+    GNNLO8=HPL(0,1.,(-1.*x1 + x2)/((3. - 2.*(1. - 1.*x1))*x2));
+    GNNLO9=HPL(0,1.,(0.5*(-1.*x1 + x2)*(1. + x2 - 1.*(1. - 1.*x1)*x2))/((1. - 1.*x1)*(1. + x1)*x2));
+    GNNLO10=HPL(0,1.,x1*x2);
+    GNNLO11=HPL(0,1.,((1. - 1.*x1)*(1. + x1)*x2)/(x1 + x2));
+    GNNLO12=HPL(0,1.,pow(x1,2)*pow(x2,2));
+    GNNLO13=HPL(0,1.,(2.*pow(x2,2))/(1. + x2));
+    GNNLO14=HPL(0,1.,(-1.*(1. - 1.*x1)*(1. + x1))/(pow(x1,2)*(1. - 1.*x2)*(1. + x2)));
+    GNNLO15=HPL(0,1.,(-1.*(-1.*x1 + x2))/((1. + x1)*(1. - 1.*x2)));
+    GNNLO16=HPL(0,1.,(-0.5*(-1.*x1 + x2)*(1. + x2 - 1.*(1. - 1.*x1)*x2))/(x1*(1. - 1.*x2)*(1. + x2)));
+    GNNLO17=HPL(0,1.,(-1.*(1. - 1.*x1)*x2)/(1. - 1.*x2));
+    GNNLO18=HPL(0,1.,(2.*(1. + x1)*x2)/((1. - 1.*x2)*(-1. + x2 - 1.*(1. - 1.*x1)*x2)));
+    GNNLO19=HPL(0,1.,(-2.*(1. - 1.*x1)*x2)/((1. - 1.*x2)*(1. + x2 - 1.*(1. - 1.*x1)*x2)));
+    GNNLO20=HPL(0,1.,(-1.*(1. - 1.*x1)*(1. + x1)*pow(x2,2))/((1. - 1.*x2)*(1. + x2)));
+    GNNLO21=HPL(0,1.,(-1.*(1. - 1.*x1)*(1. - 1.*x2))/(x1 + x2));
+    GNNLO22=HPL(0,1.,(-0.5*(1. - 1.*x1)*(1. - 1.*x2))/(x1 + x2));
+    GNNLO23=HPL(0,1.,(x1*(1. - 1.*x2)*(1. + x2))/(x1 + x2));
+    GNNLO24=HPL(0,1.,(-1.*(1. - 1.*x1)*(1. + x1)*(1. - 1.*x2)*(1. + x2))/pow(-1.*x1 + x2,2));
+    GNNLO25=HPL(0,1.,(-2.*x1*(1. - 1.*x2))/((1. - 1.*x1)*(1. + x2 - 1.*(1. - 1.*x1)*x2)));
+    GNNLO26=HPL(0,1.,(x1 - 1.*x2)/((3. - 2.*(1. - 1.*x1))*(1. + x2)));
+    GNNLO27=HPL(0,1.,(-4.*x1*x2)/pow(2. - 1.*x1 - 1.*(1. - 1.*x1)*(1. - 1.*x2) - 1.*x2,2));
+    GNNLO28=HPL(0,0.,1.,2. - 2./(1. - 1.*x1));
+    GNNLO29=HPL(0,0.,1.,1/(4. - 2.*(1. - 1.*x1)));
+    GNNLO30=HPL(0,0.,1.,x1);
+    GNNLO31=HPL(0,0.,1.,1/(1. + x1));
+    GNNLO32=HPL(0,0.,1.,1. + 0.5*(-1. + x1));
+    GNNLO33=HPL(0,0.,1.,-1.*x1);
+    GNNLO34=HPL(0,0.,1.,-2.*x1);
+    GNNLO35=HPL(0,0.,1.,-4.*x1*(1. + x1));
+    GNNLO36=HPL(0,0.,1.,0.5*(1. - 1.*x1));
+    GNNLO37=HPL(0,0.,1.,1. - 1.*x1);
+    GNNLO38=HPL(0,0.,1.,(1. - 1.*x1)*(1. + x1));
+    GNNLO39=HPL(0,0.,1.,2. - 2./(1. - 1.*x2));
+    GNNLO40=HPL(0,0.,1.,1/(4. - 2.*(1. - 1.*x2)));
+    GNNLO41=HPL(0,0.,1.,x2);
+    GNNLO42=HPL(0,0.,1.,1/(1. + x2));
+    GNNLO43=HPL(0,0.,1.,1. + 0.5*(-1. + x2));
+    GNNLO44=HPL(0,0.,1.,-1.*x2);
+    GNNLO45=HPL(0,0.,1.,-2.*x2);
+    GNNLO46=HPL(0,0.,1.,-4.*x2*(1. + x2));
+    GNNLO47=HPL(0,0.,1.,0.5*(1. - 1.*x2));
+    GNNLO48=HPL(0,0.,1.,1. - 1.*x2);
+    GNNLO49=HPL(0,0.,1.,(1. - 1.*x2)*(1. + x2));
+    
+    MRRNNLO1=0;
+    MRRNNLO2=0;
+    MRRNNLO3=0;
+    MRRNNLO4=0;
+    MRRNNLO5=0;
+    MRRNNLO6=0;
+    MRRNNLO7=0;
+    MRRNNLO8=0;
+    MRRNNLO9=0;
+    MRRNNLO10=0;
+    MRRNNLO11=0;
+    MRRNNLO12=0;
+    MRRNNLO13=0;
+    MRRNNLO14=0;
+    MRRNNLO15=0;
+    MRRNNLO16=0;
+    MRRNNLO17=0;
+    MRRNNLO18=0;
+    
+    //SetMRR();
+    //*/
 
     return;
 }
 
-
+int cc=0;
 void CrossSection::Integrate()
 {
 
@@ -69,6 +172,7 @@ void CrossSection::Integrate()
     
     xs= vector<vector<double> > (6,vector<double> (4,0));
     error= vector<vector<double> > (6,vector<double> (4,0));
+    cc=0;
     vegas.Integrate(&Integrand,res,err,chi,this);
     
     for(int i=0;i<pos2.size();++i)
@@ -82,6 +186,8 @@ void CrossSection::Integrate()
             error[pos2[i][1]][pos2[i][0]]=0;
         }
     }
+    
+    cout<<"Count is in the end: "<<cc<<endl;
     return;
 }
 
@@ -109,7 +215,9 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
     vector<vector<vector<double> > > values=zero;
     SetCoefs();
     
-
+    
+    //cout<<"x1 "<<x1<<" x2 "<<x2<<" xs qQ2 NNLO "<<XSCoef[2][5][0][0]<<endl;
+    
     for(int i=0;i<pos.size();++i)
     {
         if(pos[i][1]==0)
@@ -145,7 +253,10 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
     }
     for(int i=0;i<res.size();++i)
         for(int j=0;j<res[i].size();++j)
+        {
             res[i][j]*=pow(ar,j);
+            //cout<<i<<" "<<j<<" xs: "<<res[i][j]<<endl;
+        }
     //*/
 
     return res;
@@ -156,6 +267,8 @@ int Integrand(const double * xx,double * ff,const void * userdata,double * Expor
     CrossSection * xs=(CrossSection*) userdata;
     double x1=xx[1];
     double x2=xx[2];
+    if(x1<0.3&&x2<0.3)
+        cc++;
     double tau=xs->tau;
     double Y=fabs(log(tau))*xx[0]-0.5*fabs(log(tau));
     double bound1=sqrt(tau)*exp(-Y);

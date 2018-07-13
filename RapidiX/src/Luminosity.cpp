@@ -44,6 +44,19 @@ void Luminosity::SetLuminosity(double x1,double x2,double lb1,double lb2)
     L[3]=Lqqbar();
     L[4]=Lqq();
     L[5]=LqQ2();
+    
+    /*L[0]=1;
+    L[1]=1;
+    L[2]=1;
+    L[3]=1;
+    L[4]=1;
+    L[5]=1;
+    Lgg00=1;
+    Lgg01=1;
+    Lgg10=1;
+    Lqg10=1;
+    Lgq01=1;
+     //*/
     return;
 }
 
@@ -89,7 +102,7 @@ double Luminosity::Lqqbar()
     {
         if(i==0)
             continue;
-        lumi+=2*Lumi(-i,i,false,false);
+        lumi+=Lumi(-i,i,false,false)+Lumi(i,-i,false,false);
     }
     return lumi;
 }
@@ -109,15 +122,17 @@ double Luminosity::Lqq()
 double Luminosity::LqQ2()
 {
     double lumi=0;
-    for(int i=-5;i<5;i++)
+    for(int i=-5;i<=5;i++)
     {
-        for(int j=i+1;j<=5;j++)
+        for(int j=-5;j<=5;j++)
         {
             if(i==-j)
                 continue;
+            if(i==j)
+                continue;
             if(i==0||j==0)
                 continue;
-            lumi+=2*Lumi(i,j,false,false);
+            lumi+=Lumi(i,j,false,false);
         }
     }
     return lumi;

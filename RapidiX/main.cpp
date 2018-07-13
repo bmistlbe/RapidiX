@@ -13,12 +13,28 @@ int main(int argc, const char * argv[]) {
     std::cout << "Hello, World!\n";
     cout<<setprecision(16);
     double val=0;
-    if(argc!=2)
+    if(argc<2)
     {
         cout<<"Usage: ./main.out scale"<<endl;
         return 0;
     }
     val=atof(argv[1]);
+    
+    
+    /*Grider gr;
+    gr.ReadGrid(4,0,0,2);
+    cout<<gr.grid[0][0]<<endl;
+    cout<<gr.grid[0][1]<<endl;
+    cout<<gr.grid[1][0]<<endl;
+    cout<<gr.grid[1][1]<<endl;
+    if(argc==4)
+        cout<<"GridValue at 1 1: "<<gr.GetValue(atof(argv[2]),atof(argv[3]))<<endl;
+    for(double i=0.015;i<1;i+=0.015)
+        cout<<gr.GetValue(1,i)<<",";
+    cout<<endl;
+    
+    return 0;
+    //*/
     
     Higgs xs;
     xs.SetMuf(val);
@@ -28,30 +44,39 @@ int main(int argc, const char * argv[]) {
     
     //0=off,1=MSB,2=OS
     xs.SetWilsonCoefficientMode(0);
-    //xs.SetPDF(0,"MMHT2014nnlo68cl");
-    xs.SetPDF(0,"PDF4LHC15_nnlo_100");
+    xs.SetPDF(0,"MMHT2014nnlo68cl");
+    //xs.SetPDF(0,"PDF4LHC15_nnlo_100");
     xs.SetVerbose(2);
     xs.SetPrecision(1e-3);
-    xs.SetNumThreads(8);
+    xs.SetNumThreads(16);
     
     vector<vector<double> > res,err;
     //xs.IntegrateCrossSection();
-    
-    vector<int *> zbpowvec={&delcoefm2,&delcoefm1,&delcoef0,&delcoef1,&delcoef2,&delcoef3,&delcoef4};
+    //xs.IntegrateDistributions();
+    //return 0;
+    /*vector<int *> zbpowvec={&delcoefm2,&delcoefm1,&delcoef0,&delcoef1,&delcoef2,&delcoef3,&delcoef4,&delcoef5,&delcoef6};
     stringstream ss;
-    for(int i=6;i<zbpowvec.size();++i)
+    for(int i=2;i<zbpowvec.size();++i)
     {
+        cout<<"zb pow: "<<i<<endl;
         for(int j=0;j<zbpowvec.size();++j)
             if(j>i)
                 (*zbpowvec[j])=0;
             else
                 (*zbpowvec[j])=1;
         
+        cout<<delcoefm2<<" "<<delcoefm1<<" "<<delcoef0<<" "<<delcoef6<<endl;
         ss.str("");
-        ss<<"Results/Distributions_zb"<<i<<".txt";
+        ss<<"Results/NNLODistributions_Subtracted_zb"<<i<<"_625.txt";
+        //ss<<"Results/NNLOExact_qQ2.txt";
         xs.SetOuputFile(ss.str());
         xs.IntegrateDistributions();
+        cout<<"Back "<<endl;
     }
-        
+     //*/
+    stringstream ss;
+    ss<<"Results/NumericalNNLO.txt";
+    xs.SetOuputFile(ss.str());
+    xs.IntegrateDistributions();
     return 0;
 }

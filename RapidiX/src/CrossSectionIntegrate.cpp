@@ -11,8 +11,8 @@ void CrossSection::ParallelIntegrate()
     vegas.dimension=3;
     vegas.components=1;
     vegas.precision=MCPrecision;
-    vegas.startsize=1e5;
-    vegas.batchsize=1e5;
+    vegas.startsize=1e4;
+    vegas.batchsize=1e4;
     vegas.gridsize=100;
     vegas.mineval=10;
     vegas.maxpoints=(vegas.mineval)*vegas.batchsize;
@@ -91,9 +91,9 @@ void CrossSection::ParallelIntegrate()
         
         vector<MCEvent> Events=CreateEvents(data);
         
-#pragma omp parallel for private(i)
-        for(i=0;i<data.size();i++)
-            delete[] data[i];
+//#pragma omp parallel for private(i)
+//        for(i=0;i<data.size();i++)
+//            delete[] data[i];
         data.clear();
         
         Histopheles.AddEvents(Events,Events.size());
@@ -103,7 +103,7 @@ void CrossSection::ParallelIntegrate()
         if(fabs(error/integral)<MCPrecision)
             break;
     }
-    
+    cout<<"Through!"<<endl; 
     return;
 }
 
@@ -126,6 +126,7 @@ int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double
     for(int i=0;i<xs->pos2.size();++i)
         ExportData[i+2]+=res[xs->pos2[i][1]][xs->pos2[i][0]];
     ff[0]=xs->ComputeTotalXS(res)+1e-6;
+    
     xs=0;
     return 0;
 }

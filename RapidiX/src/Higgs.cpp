@@ -28,14 +28,20 @@ void Higgs::IntegrateCrossSection()
     xs.WC=WilsonCoeff(topmass,mur,WCMode);
     
     
-    cout<<"Integrate!"<<endl;
+    /*cout<<"Integrate!"<<endl;
+    cout<<"mt: "<<topmass<<endl;
+    cout<<"as: "<<ar*Pi<<endl;
+    xs.Evaluate(0.3,0.1,0,0,xs.pref);
+    return;
+    //*/
+    
     xs.Integrate();
     integrated=true;
     
     vector<vector<double> > result=xs.xs;
     vector<vector<double> > error=xs.error;
     
-    
+    xs.Histopheles=Histogramer();
     
     vector<string> chans={"g g","q g","g q","q qbar","q q","q Q2"};
     cout<<"The inclusive cross section integral yields: "<<endl;
@@ -75,8 +81,9 @@ void Higgs::IntegrateDistributions()
         topmass=Lumi.pdf->GetMT(mur);
     xs.WC=WilsonCoeff(topmass,mur,WCMode);
     
+    xs.Histopheles=Histogramer();
     
-    cout<<"Integrate!"<<endl;
+    cout<<"Integrate Distributions!"<<endl;
     xs.ParallelIntegrate();
     return;
 }

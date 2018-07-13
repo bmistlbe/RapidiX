@@ -9,8 +9,10 @@
 #include "PDF.h"
 #include "Histogram.h"
 #include "Luminosity.h"
+#include "HPLs.h"
 #include "Wilson.h"
 #include "Vegas.h"
+#include "Grider.h"
 
 extern int N3LOExpansion;
 class CrossSection{
@@ -19,7 +21,13 @@ public:
     
     double x1,x2;
     double Lmx11, Lmx12, Lmx13, Lmx14, Lmx15, Lmx21, Lmx22, Lmx23, Lmx24, Lmx25, Lx11, Lx12, Lx13, Lx14, Lx15, Lx21, Lx22, Lx23, Lx24, Lx25;
-    double x110, x12, x13, x14, x15, x16, x17, x18, x19, x210, x22, x23, x24, x25, x26, x27, x28, x29;
+    double x110,x111,x112,x113,x114,x115,x116,x117,x118,x119,x120, x12, x13, x14, x15, x16, x17, x18, x19, x210, x22, x23, x24, x25, x26, x27, x28, x29 ,x211,x212,x213,x214,x215,x216,x217,x218,x219,x220;
+    double GNNLO1, GNNLO2, GNNLO3, GNNLO4, GNNLO5, GNNLO6, GNNLO7, GNNLO8, GNNLO9, GNNLO10, GNNLO11, GNNLO12, GNNLO13, GNNLO14, GNNLO15, GNNLO16, GNNLO17, GNNLO18, GNNLO19, GNNLO20, GNNLO21, GNNLO22, GNNLO23, GNNLO24, GNNLO25, GNNLO26, GNNLO27, GNNLO28, GNNLO29, GNNLO30, GNNLO31, GNNLO32, GNNLO33, GNNLO34, GNNLO35, GNNLO36, GNNLO37, GNNLO38, GNNLO39, GNNLO40, GNNLO41, GNNLO42, GNNLO43, GNNLO44, GNNLO45, GNNLO46, GNNLO47, GNNLO48, GNNLO49;
+    double LogNNLO1, LogNNLO2, LogNNLO3, LogNNLO4, LogNNLO5, LogNNLO6, LogNNLO7, LogNNLO8;
+    double MRRNNLO1, MRRNNLO2, MRRNNLO3, MRRNNLO4, MRRNNLO5, MRRNNLO6, MRRNNLO7, MRRNNLO8, MRRNNLO9, MRRNNLO10, MRRNNLO11, MRRNNLO12, MRRNNLO13, MRRNNLO14, MRRNNLO15, MRRNNLO16, MRRNNLO17, MRRNNLO18;
+    
+    
+    vector<vector<vector<Grider> > > NNLOGrider;
     
     double L;
     double ar;
@@ -43,13 +51,18 @@ public:
     void SetCoefs();
     void SetNNLO();
     void SetN3LO();
+    void SetMRR();
     
     string ResultFile;
     Histogramer Histopheles;
     int RandomSeedOffset;
+    void ReadGrids();
     
     CrossSection()
     {
+        NNLOGrider=vector<vector<vector<Grider> > > (6,vector<vector<Grider> >(3,vector<Grider>(21)));
+        ReadGrids();
+        
         NrThreads=8;
         ResultFile="Output.txt";
         RandomSeedOffset=0;

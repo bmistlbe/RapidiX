@@ -98,6 +98,7 @@ public:
     };
     ~VegasIntegrator()
     {
+        /*
         if(grid_lowerbounds!=0)
         {
             for(int i=0;i<dimension;++i)
@@ -108,6 +109,7 @@ public:
             delete grid_lowerbounds;
             delete grid_upperbounds;
         }
+        //*/
     }
     double myrand(mt19937 & mm)
     {

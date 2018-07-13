@@ -12,7 +12,7 @@ XSFILES= $(XS_FILES)
 
 
 RFLAGS = 
-LOPENMP= -fopenmp 
+LOPENMP= -fopenmp -lchaplin
 LFLAGS = -lm -lLHAPDF 
 LIB_FLAGS = -L/usr/local/lib
 INC_FLAGS = -I/usr/local/include

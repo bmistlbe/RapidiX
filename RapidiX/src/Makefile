@@ -1,4 +1,4 @@
-CC =g++ -g -m64 -fopenmp -O3 -std=c++11  -w
+CC =g++ -g -m64 -fopenmp -std=c++11  -w
 
 
 SOURCE =$(patsubst ./%.cpp, ./%.o, $(wildcard ./*.cpp))
@@ -6,7 +6,7 @@ SOURCE =$(patsubst ./%.cpp, ./%.o, $(wildcard ./*.cpp))
 
 RFLAGS = 
 LOPENMP=
-LFLAGS = -lm -lLHAPDF
+LFLAGS = -lm -lLHAPDF -lchaplin
 LIB_FLAGS = -L/usr/local/lib
 INC_FLAGS = -I/usr/local/include 
 
