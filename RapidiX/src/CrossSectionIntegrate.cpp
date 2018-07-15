@@ -8,7 +8,10 @@ void CrossSection::ParallelIntegrate()
     
     VegasIntegrator vegas;
     vegas.verbose=MCVerbose;
-    vegas.dimension=3;
+    if(Y==110)
+        vegas.dimension=3;
+    else
+        vegas.dimension=2;
     vegas.components=1;
     vegas.precision=MCPrecision;
     vegas.startsize=1e4;
@@ -16,9 +19,11 @@ void CrossSection::ParallelIntegrate()
     vegas.gridsize=100;
     vegas.mineval=10;
     vegas.maxpoints=(vegas.mineval)*vegas.batchsize;
-    vegas.GridExport=true;
+    vegas.GridExport=false;
     vegas.ExportComponents=pos2.size()+2;
     double * chi,*res,*err;
+    
+    IncCoefs.Initiate();
     
     xs= vector<vector<double> > (6,vector<double> (4,0));
     error= vector<vector<double> > (6,vector<double> (4,0));
@@ -111,13 +116,22 @@ void CrossSection::ParallelIntegrate()
 int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double * ExportData)
 {
     CrossSection * xs=(CrossSection*) userdata;
-    double x1=xx[1];
-    double x2=xx[2];
+    double x1=xx[0];
+    double x2=xx[1];
     double tau=xs->tau;
-    double Y=fabs(log(tau))*xx[0]-0.5*fabs(log(tau));
+    double Y,Jac;
+    if(xs->Y==110)
+    {
+        Y=fabs(log(tau))*xx[2]-0.5*fabs(log(tau));
+        Jac=fabs(log(tau))*xs->pref;
+    }
+    else
+    {
+        Y=xs->Y;
+        Jac=xs->pref;
+    }
     double bound1=sqrt(tau)*exp(-Y);
     double bound2=sqrt(tau)*exp(Y);
-    double Jac=fabs(log(tau))*xs->pref;
     
     ff[0]=1e-9;
     

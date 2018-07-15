@@ -43,13 +43,16 @@ int main(int argc, const char * argv[]) {
     xs.Setmt(162.7);
     
     //0=off,1=MSB,2=OS
-    xs.SetWilsonCoefficientMode(0);
+    xs.SetWilsonCoefficientMode(1);
     xs.SetPDF(0,"MMHT2014nnlo68cl");
     //xs.SetPDF(0,"PDF4LHC15_nnlo_100");
     xs.SetVerbose(2);
-    xs.SetPrecision(1e-3);
-    xs.SetNumThreads(16);
-    
+    xs.SetPrecision(1e-2);
+    xs.SetNumThreads(4);
+    vector<int *> zbpowvec={&delcoefm2,&delcoefm1,&delcoef0,&delcoef1,&delcoef2,&delcoef3,&delcoef4,&delcoef5,&delcoef6};
+    for(int j=6;j<zbpowvec.size();++j)
+        (*zbpowvec[j])=0;
+
     vector<vector<double> > res,err;
     //xs.IntegrateCrossSection();
     //xs.IntegrateDistributions();
@@ -75,8 +78,9 @@ int main(int argc, const char * argv[]) {
     }
      //*/
     stringstream ss;
-    ss<<"Results/NumericalNNLO.txt";
+    ss<<"Results/Test.txt";
     xs.SetOuputFile(ss.str());
-    xs.IntegrateDistributions();
+    xs.IntegrateCrossSection();
+    //xs.IntegrateDistributions();
     return 0;
 }

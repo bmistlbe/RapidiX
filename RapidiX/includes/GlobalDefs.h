@@ -24,6 +24,7 @@
 using namespace std;
 
 extern double Pi;
+extern string path;
 
 void str_replace(string rep, string wit, string & in);
 vector<double> Multiply(const vector<double> & a,const vector<double> & b);

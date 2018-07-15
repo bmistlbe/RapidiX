@@ -13,6 +13,7 @@
 #include "Wilson.h"
 #include "Vegas.h"
 #include "Grider.h"
+#include "Inclusive.h"
 
 extern int N3LOExpansion;
 class CrossSection{
@@ -37,9 +38,10 @@ public:
     double pref;
     vector<double> WC;
     Luminosity Lumi;
+    double Y;
     
     vector<vector<double> > xs,error;
-    vector<vector<vector<double> > > zero;
+    vector<vector<vector<double> > > zero,values;
     vector<vector<int> > pos,pos2;
     
     double XSCoef[4][6][4][4];
@@ -58,8 +60,12 @@ public:
     int RandomSeedOffset;
     void ReadGrids();
     
+    
+    InclusiveCoefficients IncCoefs;
+    
     CrossSection()
     {
+        Y=110;
         NNLOGrider=vector<vector<vector<Grider> > > (6,vector<vector<Grider> >(3,vector<Grider>(21)));
         ReadGrids();
         
@@ -86,6 +92,7 @@ public:
         
         //Order , Initial Stat , Log Power
         zero=vector<vector<vector<double> > >  (4,vector<vector<double> > (6,vector<double>(4,0)));
+        values=zero;
         
         //order , initial stat , Log Power
         pos.push_back(lst(0,0,0));

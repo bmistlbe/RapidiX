@@ -76,6 +76,7 @@ public:
     void SetResultFile(string file){xs.ResultFile=file;return;};
     void SetOuputFile(string file){xs.ResultFile=file;return;};
     void SetNumThreads(int nrth){xs.NrThreads=nrth;return;};
+    void SetY(double Y){xs.Y=Y;return;};
     
     
     //Do Stuff

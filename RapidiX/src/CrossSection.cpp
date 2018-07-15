@@ -151,14 +151,14 @@ void CrossSection::ComputeDummyVariables()
     return;
 }
 
-int cc=0;
 void CrossSection::Integrate()
 {
-
-    
     VegasIntegrator vegas;
     vegas.verbose=MCVerbose;
-    vegas.dimension=3;
+    if(Y==110)
+        vegas.dimension=3;
+    else
+        vegas.dimension=2;
     vegas.components=pos2.size()+1;
     vegas.precision=MCPrecision;
     vegas.startsize=1e5;
@@ -170,9 +170,10 @@ void CrossSection::Integrate()
     vegas.ExportComponents=0;
     double * chi,*res,*err;
     
+    
+    IncCoefs.Initiate();
     xs= vector<vector<double> > (6,vector<double> (4,0));
     error= vector<vector<double> > (6,vector<double> (4,0));
-    cc=0;
     vegas.Integrate(&Integrand,res,err,chi,this);
     
     for(int i=0;i<pos2.size();++i)
@@ -186,8 +187,7 @@ void CrossSection::Integrate()
             error[pos2[i][1]][pos2[i][0]]=0;
         }
     }
-    
-    cout<<"Count is in the end: "<<cc<<endl;
+
     return;
 }
 
@@ -204,22 +204,27 @@ double CrossSection::ComputeTotalXS(const vector<vector<double > > & vec)
 }
 
 
-
 vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bound1,double bound2,double Jac)
 {
     x1=xx1;
     x2=xx2;
     ComputeDummyVariables();
     
+    int i,j,k;
     Lumi.SetLuminosity(x1,x2,bound1,bound2);
-    vector<vector<vector<double> > > values=zero;
+    for(i=0;i<pos.size();i++)
+        values[pos[i][0]][pos[i][1]][pos[i][2]]=0;
+
     SetCoefs();
-    
-    
-    //cout<<"x1 "<<x1<<" x2 "<<x2<<" xs qQ2 NNLO "<<XSCoef[2][5][0][0]<<endl;
-    
-    for(int i=0;i<pos.size();++i)
+    IncCoefs.ComputeDummyVariables(x1*x2);
+    //cout<<"z="<<x1*x2<<" and q Q2 N3LO is "<<IncCoefs.values[3][5][0]<<endl;
+
+    for(i=0;i<pos.size();++i)
     {
+        //This two lines ensure that the N3LO xs is N3LO inclusive accurate
+        if(pos[i][0]==3)
+            XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]+=(x1+x2)/2.0/(1.0-x1*x2)*IncCoefs.values[pos[i][0]][pos[i][1]][pos[i][2]];
+        
         if(pos[i][1]==0)
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=
             XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]]
@@ -236,26 +241,25 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
             +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][1]*Lumi.Lgq01;
         else
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]];
-        
         values[pos[i][0]][pos[i][1]][pos[i][2]]*=Jac*pow(L,pos[i][2]);
         
     }
+     //*/
     vector<vector<double> > res(6,vector<double> (4,0));
-    for(int i=0;i<values.size();++i)
-        for(int j=0;j<values[i].size();++j)
-            for(int k=0;k<values[i][j].size();++k)
+    for(i=0;i<values.size();++i)
+        for(j=0;j<values[i].size();++j)
+            for(k=0;k<values[i][j].size();++k)
                 res[j][i]+=values[i][j][k];
     
-    for(int i=0;i<res.size();++i)
+    for(i=0;i<res.size();++i)
     {
         res[i]=MuREvolution(Lfr,res[i]);
         res[i]=Multiply(WC,res[i]);
     }
-    for(int i=0;i<res.size();++i)
-        for(int j=0;j<res[i].size();++j)
+    for(i=0;i<res.size();++i)
+        for(j=0;j<res[i].size();++j)
         {
             res[i][j]*=pow(ar,j);
-            //cout<<i<<" "<<j<<" xs: "<<res[i][j]<<endl;
         }
     //*/
 
@@ -265,15 +269,23 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
 int Integrand(const double * xx,double * ff,const void * userdata,double * ExportData)
 {
     CrossSection * xs=(CrossSection*) userdata;
-    double x1=xx[1];
-    double x2=xx[2];
-    if(x1<0.3&&x2<0.3)
-        cc++;
+    double x1=xx[0];
+    double x2=xx[1];
+
     double tau=xs->tau;
-    double Y=fabs(log(tau))*xx[0]-0.5*fabs(log(tau));
+    double Y,Jac;
+    if(xs->Y==110)
+    {
+        Y=fabs(log(tau))*xx[2]-0.5*fabs(log(tau));
+        Jac=fabs(log(tau))*xs->pref;
+    }
+    else
+    {
+        Y=xs->Y;
+        Jac=xs->pref;
+    }
     double bound1=sqrt(tau)*exp(-Y);
     double bound2=sqrt(tau)*exp(Y);
-    double Jac=fabs(log(tau))*xs->pref;
     
     for(int i=0;i<xs->pos2.size()+1;i++)
         ff[i]=1e-9;

@@ -16,7 +16,7 @@ void Grider::ReadGrid(int state,int L1,int L2,int o)
     string buffer="";
     stringstream ss;
     if(o==2)
-        ss<<"XS/NumericalNNLO/Grid_"<<state<<"_"<<L1<<"_"<<L2<<".txt";
+        ss<<path<<"XS/NumericalNNLO/Grid_"<<state<<"_"<<L1<<"_"<<L2<<".txt";
     string inputf=ss.str();
     ss.str("");
     

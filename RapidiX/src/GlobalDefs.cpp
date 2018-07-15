@@ -1,6 +1,6 @@
 #include "../includes/GlobalDefs.h"
 
-
+string path="";
 double Pi=3.1415926535897932;
 
 int delcoefm2=1;
