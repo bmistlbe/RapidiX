@@ -9,7 +9,9 @@ void Higgs::IntegrateCrossSection()
     Lumi.pdf->SetMT(mt);
     Lumi.pdf->SetMuf(muf);
     //Lumi.pdf->CreateGrid(muf);
+    //ar=Lumi.pdf->GetAlphaFromPDF(mur)/Pi;
     ar=Lumi.pdf->GetAlpha(mur)/Pi;
+    cout<<"Alpha_S("<<mur<<")="<<ar*Pi<<"."<<endl;
     
     //Parameters
     xs.Lfr=2*log(muf/mur);
@@ -25,7 +27,9 @@ void Higgs::IntegrateCrossSection()
     double topmass=mt;
     if(WCMode==1)
         topmass=Lumi.pdf->GetMT(mur);
+    cout<<"m_t("<<mur<<")="<<topmass<<" GeV."<<endl;
     xs.WC=WilsonCoeff(topmass,mur,WCMode);
+    //cout<<xs.WC[0]<<" "<<xs.WC[1]<<" "<<xs.WC[2]<<" "<<xs.WC[3]<<endl;
     
     
     /*cout<<"Integrate!"<<endl;
@@ -35,13 +39,12 @@ void Higgs::IntegrateCrossSection()
     return;
     //*/
     
-    xs.Integrate();
+    //xs.Integrate();
+    xs.IntegrateCuba();
     integrated=true;
     
     vector<vector<double> > result=xs.xs;
     vector<vector<double> > error=xs.error;
-    
-    xs.Histopheles=Histogramer();
     
     vector<string> chans={"g g","q g","g q","q qbar","q q","q Q2"};
     cout<<"The inclusive cross section integral yields: "<<endl;
@@ -62,7 +65,7 @@ void Higgs::IntegrateDistributions()
     Lumi.pdf->SetMZ(mZ);
     Lumi.pdf->SetMT(mt);
     Lumi.pdf->SetMuf(muf);
-    //Lumi.pdf->CreateGrid(muf);
+    Lumi.pdf->CreateGrid(muf);
     ar=Lumi.pdf->GetAlpha(mur)/Pi;
     
     //Parameters

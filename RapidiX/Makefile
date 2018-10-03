@@ -5,7 +5,7 @@ XS_FILES =$(patsubst ./XS/%.cpp, ./XS/%.o, $(wildcard ./XS/*.cpp))
 
 
 SOURCE= $(patsubst ./src/%.cpp, ./src/%.o, $(wildcard ./src/*.cpp))
-
+SSSOURCE2= $(patsubst ./FalkoRegularNNLO/%.cpp, ./FalkoRegularNNLO/%.o, $(wildcard ./FalkoRegularNNLO/*.cpp))
 
 XSFILES= $(XS_FILES) 
 
@@ -13,15 +13,16 @@ XSFILES= $(XS_FILES)
 
 RFLAGS = 
 LOPENMP= -fopenmp -lchaplin
-LFLAGS = -lm -lLHAPDF 
+LFLAGS = -lm -lLHAPDF -lcuba
 LIB_FLAGS = -L/usr/local/lib
 INC_FLAGS = -I/usr/local/include
 
 
 %.out : %.o
 	$(MAKE) -C ./src/
+	$(MAKE) -C ./FalkoRegularNNLO/
 	$(MAKE) -C ./XS/
-	$(CC) $(SOURCE) $(XSFILES) $<  -o $@ $(INC_FLAGS) $(LIB_FLAGS) $(LFLAGS) $(LOPENMP)
+	$(CC) $(SOURCE) $(SOURCE2) $(XSFILES) $<  -o $@ $(INC_FLAGS) $(LIB_FLAGS) $(LFLAGS) $(LOPENMP)
 
 
 %.o : %.cpp

@@ -1,0 +1,2 @@
+ XSCoef[2][4][1][0]+=+NNLOGrider[4][1][0].GetValue(x1,x2)+NNLOGrider[4][1][1].GetValue(x1,x2)*Lx11+NNLOGrider[4][1][6].GetValue(x1,x2)*Lx21;
+ XSCoef[2][4][2][0]+=+NNLOGrider[4][2][0].GetValue(x1,x2);

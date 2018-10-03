@@ -1,4 +1,5 @@
 #include "../includes/CrossSection.h"
+#include "Cuba.h"
 
 int wup=0;
 
@@ -9,9 +10,9 @@ void CrossSection::ParallelIntegrate()
     VegasIntegrator vegas;
     vegas.verbose=MCVerbose;
     if(Y==110)
-        vegas.dimension=3;
+        vegas.dimension=4;
     else
-        vegas.dimension=2;
+        vegas.dimension=3;
     vegas.components=1;
     vegas.precision=MCPrecision;
     vegas.startsize=1e4;
@@ -113,6 +114,91 @@ void CrossSection::ParallelIntegrate()
 }
 
 
+void CrossSection::IntegrateCuba()
+{
+
+    int NDIM;
+    if(Y==110)
+        NDIM=4;
+    else
+        NDIM=3;
+    int NCOMP=pos2.size()+1;
+    int NVEC=1;
+    double EPSREL= MCPrecision;
+    double EPSABS= 1e-18;
+    int VERBOSE=MCVerbose;
+    int LAST=4;
+    int SEED=0;
+    int MINEVAL=1000;
+    int MAXEVAL=500000000;
+    int NSTART=1000;
+    int NINCREASE=50000;
+    int NBATCH=1000;
+    int KEY=9;
+    double res[NCOMP], err[NCOMP], chi[NCOMP];
+    int comp, nregions, neval, fail,cuhre_key=9;
+    
+    
+    IncCoefs.Initiate();
+    xs= vector<vector<double> > (6,vector<double> (4,0));
+    error= vector<vector<double> > (6,vector<double> (4,0));
+    
+    Cuhre(NDIM, NCOMP, CubaIntegrand, this, NVEC,EPSREL, EPSABS, VERBOSE ,MINEVAL, MAXEVAL, KEY, NULL, NULL,&nregions, &neval, &fail, res,err,chi);
+    //Cuhre(NDIM, NCOMP, CubaIntegrand, this, NVEC,EPSREL, EPSABS,  VERBOSE, MINEVAL, MAXEVAL, KEY,0, &nregions, &neval,&fail, res, err, chi);
+    
+    for(int i=0;i<pos2.size();++i)
+    {
+        xs[pos2[i][1]][pos2[i][0]]=res[i+1]-1e-6;
+        error[pos2[i][1]][pos2[i][0]]=err[i+1];
+        cout<<"Integration Result "<<i<<" = "<<res[i+1]<<" +- "<<err[i+1]<<" +- "<<fabs(err[i+1]/res[i+1])*100 <<" %"<<endl;
+        if(fabs(xs[pos2[i][1]][pos2[i][0]])<1e-5)
+        {
+            xs[pos2[i][1]][pos2[i][0]]=0;
+            error[pos2[i][1]][pos2[i][0]]=0;
+        }
+    }
+    return;
+}
+
+
+static int CubaIntegrand(const int *ndim, const double xx[], const int *ncomp, double ff[], void *userdata)
+{
+    CrossSection * xs=(CrossSection*) userdata;
+    double x1=xx[0];
+    double x2=xx[1];
+    double xb=xx[2];
+    
+    double tau=xs->tau;
+    double Y,Jac;
+    if(xs->Y==110)
+    {
+        Y=fabs(log(tau))*xx[3]-0.5*fabs(log(tau));
+        Jac=fabs(log(tau))*xs->pref;
+    }
+    else
+    {
+        Y=xs->Y;
+        Jac=xs->pref;
+    }
+    double bound1=sqrt(tau)*exp(-Y);
+    double bound2=sqrt(tau)*exp(Y);
+    
+    for(int i=0;i<xs->pos2.size()+1;i++)
+        ff[i]=1e-9;
+    
+    vector<vector<double> > res=xs->Evaluate(x1,x2,xb,bound1,bound2,Jac);
+    for(int i=0;i<xs->pos2.size();++i)
+        ff[i+1]+=res[xs->pos2[i][1]][xs->pos2[i][0]];
+    ff[0]=xs->ComputeTotalXS(res)+1e-6;
+    
+    //cout<<ff[0]<<endl;
+    xs=0;
+    return 0;
+}
+
+
+
+
 int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double * ExportData)
 {
     CrossSection * xs=(CrossSection*) userdata;
@@ -120,9 +206,11 @@ int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double
     double x2=xx[1];
     double tau=xs->tau;
     double Y,Jac;
+    double xb=xx[2];
+
     if(xs->Y==110)
     {
-        Y=fabs(log(tau))*xx[2]-0.5*fabs(log(tau));
+        Y=fabs(log(tau))*xx[3]-0.5*fabs(log(tau));
         Jac=fabs(log(tau))*xs->pref;
     }
     else
@@ -135,7 +223,7 @@ int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double
     
     ff[0]=1e-9;
     
-    vector<vector<double> > res=xs->Evaluate(x1,x2,bound1,bound2,Jac);
+    vector<vector<double> > res=xs->Evaluate(x1,x2,xb,bound1,bound2,Jac);
     ExportData[1]=Y;
     for(int i=0;i<xs->pos2.size();++i)
         ExportData[i+2]+=res[xs->pos2[i][1]][xs->pos2[i][0]];

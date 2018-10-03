@@ -38,22 +38,42 @@ int main(int argc, const char * argv[]) {
     //0=off,1=MSB,2=OS
     xs.SetWilsonCoefficientMode(1);
     xs.SetPDF(0,"MMHT2014nnlo68cl");
-    xs.SetVerbose(2);
-    xs.SetPrecision(5e-4);
-    xs.SetNumThreads(16);
+    xs.SetVerbose(0);
+    xs.SetPrecision(1e-3);
+    xs.SetNumThreads(4);
     
     vector<vector<double> > res,err;
     stringstream ss;
+    
     for(double i=0;i<4.5;i+=0.1)
     {
         if(argc==4)
-            i=atoi(argv[3])/20.0;
+            i=atof(argv[3])/10.0;
+        
         cout<<"Treating Rapidity "<<i<<endl;
         xs.SetY(i+1e-10);
         ss.str("");
-        ss<<path<<"Results/Rapidity/Distributions_N3LO_Y"<<i<<"_mu"<<val<<"_zb"<<zbpow<<".txt";
-        xs.SetOuputFile(ss.str());
-        xs.IntegrateDistributions();
+        //ss<<path<<"Results/Rapidity/Rapidity_NNLOExpMatched_Y"<<i<<"_mu"<<val<<"_zbpow"<<zbpow<<".txt";
+        ss<<path<<"Results/Rapidity/Rapidity_NNLO_Y"<<i<<"_mu"<<val<<".txt";
+        xs.IntegrateCrossSection();
+        string file=ss.str();
+        ss.str("");
+        ss<<"{";
+        for(int j=0;j<xs.xs.xs.size();++j)
+        {
+            for(int k=0;k<xs.xs.xs[j].size();++k)
+            {
+                ss<<"{"<<xs.xs.xs[j][k]<<","<<xs.xs.error[j][k]<<"},";
+            }
+        }
+        ss<<"}";
+        ofstream out;
+        out.open(file.c_str());
+        out<<ss.str()<<endl;
+        out.close();
+        
+        if(argc==4)
+            return 0;
     }
     return 0;
 }

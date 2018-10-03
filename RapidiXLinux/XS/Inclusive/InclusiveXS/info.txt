@@ -1,0 +1,54 @@
+Description of the ancillary files:
+
+Files:
+XS_zb.txt
+XS_z.txt
+XS_w.txt
+XSReg.m
+
+
+Definitions:
+nc= number of colours = 3
+nf= number of light quark flavours = 5
+zb=1-z=1-mh^2/s
+MH2= Higgs boson mass squared= (125 GeV)^2
+muf2= perturbative scale squared mu^2.
+
+The functions G[a1,a2,…,zb] are GPLs
+The functions J[a1,a2,…,zb] are iterated integrals as defined in eq. 3.28 of the paper.
+The function t[i,j] are the elliptic integrals defined via eq. 3.14.
+
+
+
+
+File content:
+The files contain a list of lists. 
+For example load into Mathematica via:
+lst=Get[“XSReg.m”];
+
+The entry 
+lst[[a,b]]
+corresponds to the order (a-1) of the regular coefficient function (eq.2.10) of the initial state b:
+b=1: gluon guon
+b=2: quark guon
+b=3: quark anti-quark
+b=4: quark quark
+b=5: quark Quark (different flavours)
+
+For example:
+a=4, b=1
+lst[[4,1]] corresponds to the regular N^3LO coefficient function for the gluon gluon initial state.
+
+
+The file XSReg.m contains the analytic results.
+The file XS_zb.txt contains an expansion of the regular coefficient functions around the point zb=0=1-z.
+The file XS_z.txt contains an expansion of the regular coefficient functions around the point z=0.
+The file XS_w.txt contains an expansion of the regular coefficient functions around the point w=0=1/2-z.
+
+
+
+
+
+
+
+

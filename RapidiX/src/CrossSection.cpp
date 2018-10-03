@@ -6,6 +6,7 @@ int N3LOExpansion=-1;
 
 void CrossSection::ComputeDummyVariables()
 {
+    zb=1-x1*x2;
     Lx11=log(1 - x1);
     Lmx11=log(1 + x1);
     Lx21=log(1 - x2);
@@ -64,6 +65,20 @@ void CrossSection::ComputeDummyVariables()
     x219=pow(x2,19);
     x120=pow(x1,20);
     x220=pow(x2,20);
+    x121=pow(x1,21);
+    x221=pow(x2,21);
+    x122=pow(x1,22);
+    x222=pow(x2,22);
+    x123=pow(x1,23);
+    x223=pow(x2,23);
+    x124=pow(x1,24);
+    x224=pow(x2,24);
+    x125=pow(x1,25);
+    x225=pow(x2,25);
+    x126=pow(x1,26);
+    x226=pow(x2,26);
+    x127=pow(x1,27);
+    x227=pow(x2,27);
 
     
     LogNNLO1=log(1 + 2*x1);
@@ -125,7 +140,7 @@ void CrossSection::ComputeDummyVariables()
     GNNLO47=HPL(0,0.,1.,0.5*(1. - 1.*x2));
     GNNLO48=HPL(0,0.,1.,1. - 1.*x2);
     GNNLO49=HPL(0,0.,1.,(1. - 1.*x2)*(1. + x2));
-    
+    //*/
     MRRNNLO1=0;
     MRRNNLO2=0;
     MRRNNLO3=0;
@@ -156,20 +171,21 @@ void CrossSection::Integrate()
     VegasIntegrator vegas;
     vegas.verbose=MCVerbose;
     if(Y==110)
-        vegas.dimension=3;
+        vegas.dimension=4;
     else
-        vegas.dimension=2;
+        vegas.dimension=3;
     vegas.components=pos2.size()+1;
     vegas.precision=MCPrecision;
-    vegas.startsize=1e5;
-    vegas.batchsize=1e5;
+    vegas.startsize=1e4;
+    vegas.batchsize=1e4;
     vegas.gridsize=100;
     vegas.mineval=10;
     vegas.maxpoints=1e9;
     vegas.GridExport=false;
     vegas.ExportComponents=0;
     double * chi,*res,*err;
-    
+    //*/
+
     
     IncCoefs.Initiate();
     xs= vector<vector<double> > (6,vector<double> (4,0));
@@ -204,27 +220,38 @@ double CrossSection::ComputeTotalXS(const vector<vector<double > > & vec)
 }
 
 
-vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bound1,double bound2,double Jac)
+vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double xxb,double bound1,double bound2,double Jac)
 {
     x1=xx1;
     x2=xx2;
+    xb=xxb;
+    
+    //debug
+    /*x1=0.3;
+    x2=0.1;
+    //*/
+    
     ComputeDummyVariables();
     
     int i,j,k;
+    vector<vector<double> > res(6,vector<double> (4,0));
+    
     Lumi.SetLuminosity(x1,x2,bound1,bound2);
     for(i=0;i<pos.size();i++)
         values[pos[i][0]][pos[i][1]][pos[i][2]]=0;
 
-    SetCoefs();
-    IncCoefs.ComputeDummyVariables(x1*x2);
-    //cout<<"z="<<x1*x2<<" and q Q2 N3LO is "<<IncCoefs.values[3][5][0]<<endl;
 
+    
+    SetCoefs();
+    //IncCoefs.ComputeDummyVariables(x1*x2);
+    //cout<<"z="<<x1*x2<<" and q Q2 N3LO is "<<IncCoefs.values[3][5][0]<<endl;
+    //cout<<"x1: "<<x1<<" x2 "<<x2<<" xb "<<xb<<" xscoef 2 0 0 0 = "<<XSCoef[2][0][0][0]<<endl;
     for(i=0;i<pos.size();++i)
     {
         //This two lines ensure that the N3LO xs is N3LO inclusive accurate
         if(pos[i][0]==3)
             XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]+=(x1+x2)/2.0/(1.0-x1*x2)*IncCoefs.values[pos[i][0]][pos[i][1]][pos[i][2]];
-        
+
         if(pos[i][1]==0)
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=
             XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]]
@@ -245,7 +272,6 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
         
     }
      //*/
-    vector<vector<double> > res(6,vector<double> (4,0));
     for(i=0;i<values.size();++i)
         for(j=0;j<values[i].size();++j)
             for(k=0;k<values[i][j].size();++k)
@@ -253,8 +279,8 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
     
     for(i=0;i<res.size();++i)
     {
-        res[i]=MuREvolution(Lfr,res[i]);
         res[i]=Multiply(WC,res[i]);
+        res[i]=MuREvolution(Lfr,res[i]);
     }
     for(i=0;i<res.size();++i)
         for(j=0;j<res[i].size();++j)
@@ -271,6 +297,8 @@ int Integrand(const double * xx,double * ff,const void * userdata,double * Expor
     CrossSection * xs=(CrossSection*) userdata;
     double x1=xx[0];
     double x2=xx[1];
+    double xb=xx[3];
+    //double xb=0;
 
     double tau=xs->tau;
     double Y,Jac;
@@ -290,7 +318,7 @@ int Integrand(const double * xx,double * ff,const void * userdata,double * Expor
     for(int i=0;i<xs->pos2.size()+1;i++)
         ff[i]=1e-9;
     
-    vector<vector<double> > res=xs->Evaluate(x1,x2,bound1,bound2,Jac);
+    vector<vector<double> > res=xs->Evaluate(x1,x2,xb,bound1,bound2,Jac);
     for(int i=0;i<xs->pos2.size();++i)
         ff[i+1]+=res[xs->pos2[i][1]][xs->pos2[i][0]];
     ff[0]=xs->ComputeTotalXS(res)+1e-6;
