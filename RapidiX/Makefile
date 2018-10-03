@@ -22,7 +22,7 @@ INC_FLAGS = -I/usr/local/include
 	$(MAKE) -C ./src/
 	$(MAKE) -C ./FalkoRegularNNLO/
 	$(MAKE) -C ./XS/
-	$(CC) $(SOURCE) $(SOURCE2) $(XSFILES) $<  -o $@ $(INC_FLAGS) $(LIB_FLAGS) $(LFLAGS) $(LOPENMP)
+	$(CC) $(SOURCE) $(SSSOURCE2) $(XSFILES) $<  -o $@ $(INC_FLAGS) $(LIB_FLAGS) $(LFLAGS) $(LOPENMP)
 
 
 %.o : %.cpp
