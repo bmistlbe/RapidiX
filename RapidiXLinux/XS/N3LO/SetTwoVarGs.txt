@@ -1,0 +1,5 @@
+N3LOTwoVarG1=-HPL(0,1,(1-x1)/(1+x2));
+N3LOTwoVarG2=-HPL(0,1,-((-1-x2)/x2))+HPL(0,1,(x1+x2)/x2)-log(x1)*log(1+x2)+log(x2)*log(1+x2)+log(x1)*log(x1+x2)-log(x2)*log(x1+x2);
+N3LOTwoVarG3=-HPL(0,1,(-1-x2)/(1-x2))+HPL(0,1,-((x1+x2)/(1-x2)))-log(1+x1)*log(1+x2)+log(1-x2)*log(1+x2)+log(1+x1)*log(x1+x2)-log(1-x2)*log(x1+x2);
+N3LOTwoVarG4=-HPL(0,1,-(1/x2))+HPL(0,1,-(x1/x2))-log(x1)*log(x2)+log(x1)*log(x1+x2);
+N3LOTwoVarG5=-HPL(0,1,2/(1-x2))+HPL(0,1,(1+x1)/(1-x2))+log(2)*log(1-x2)-log(1+x1)*log(1-x2)-log(2)*log(x1+x2)+log(1+x1)*log(x1+x2);

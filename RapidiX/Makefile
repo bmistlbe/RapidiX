@@ -6,6 +6,7 @@ XS_FILES =$(patsubst ./XS/%.cpp, ./XS/%.o, $(wildcard ./XS/*.cpp))
 
 SOURCE= $(patsubst ./src/%.cpp, ./src/%.o, $(wildcard ./src/*.cpp))
 SSSOURCE2= $(patsubst ./FalkoRegularNNLO/%.cpp, ./FalkoRegularNNLO/%.o, $(wildcard ./FalkoRegularNNLO/*.cpp))
+GS=$(patsubst ./Gs/%.cpp, ./Gs/%.o, $(wildcard ./Gs/*.cpp))
 
 XSFILES= $(XS_FILES) 
 
@@ -22,8 +23,9 @@ INC_FLAGS = -I/usr/local/include
 	$(MAKE) -C ./src/
 	$(MAKE) -C ./FalkoRegularNNLO/
 	$(MAKE) -C ./XS/
-	$(CC) $(SOURCE) $(SSSOURCE2) $(XSFILES) $<  -o $@ $(INC_FLAGS) $(LIB_FLAGS) $(LFLAGS) $(LOPENMP)
-
+	$(MAKE) -C ./Gs/
+#	$(CC) $(SOURCE) $(XSFILES) $<  -o $@ $(INC_FLAGS) $(LIB_FLAGS) $(LFLAGS) $(LOPENMP)
+	$(CC) $(SOURCE) $(SSSOURCE2) $(GS) $(XSFILES) $<  -o $@ $(INC_FLAGS) $(LIB_FLAGS) $(LFLAGS) $(LOPENMP)
 
 %.o : %.cpp
 	$(CC) $(INC_FLAGS) $(LOPENMP) -c $< -o $@
@@ -33,7 +35,7 @@ INC_FLAGS = -I/usr/local/include
     
 
 clean:
-	rm	-rf *.out *.o *.dSYM ./src/*.o ./XS/*.o
+	rm	-rf *.out *.o *.dSYM ./src/*.o ./XS/*.o ./Gs/*.o
 
 cleansrc:
-	rm 	-rf *.out *.o ./src/*.o  *.dSYM
+	rm 	-rf *.out *.o ./src/*.o  *.dSYM ./Gs/*.o

@@ -1,4 +1,4 @@
-CC =g++ -g -m64 -fopenmp -std=c++11  -w
+CC =g++ -O3 -m64 -fopenmp -std=c++11  -w
 
 
 SOURCE =$(patsubst ./%.cpp, ./%.o, $(wildcard ./*.cpp))

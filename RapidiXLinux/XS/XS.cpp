@@ -9,7 +9,7 @@ void CrossSection::SetCoefs()
 #include "../XS/NLO/xs_g_q.txt"
 #include "../XS/NLO/xs_q_qbar.txt"
     SetNNLO();
-    //SetN3LO();
+    SetN3LO();
  //*/
     return;
 }

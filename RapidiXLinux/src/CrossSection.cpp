@@ -6,6 +6,7 @@ int N3LOExpansion=-1;
 
 void CrossSection::ComputeDummyVariables()
 {
+    zb=1-x1*x2;
     Lx11=log(1 - x1);
     Lmx11=log(1 + x1);
     Lx21=log(1 - x2);
@@ -140,28 +141,10 @@ void CrossSection::ComputeDummyVariables()
     GNNLO48=HPL(0,0.,1.,1. - 1.*x2);
     GNNLO49=HPL(0,0.,1.,(1. - 1.*x2)*(1. + x2));
     
-    MRRNNLO1=0;
-    MRRNNLO2=0;
-    MRRNNLO3=0;
-    MRRNNLO4=0;
-    MRRNNLO5=0;
-    MRRNNLO6=0;
-    MRRNNLO7=0;
-    MRRNNLO8=0;
-    MRRNNLO9=0;
-    MRRNNLO10=0;
-    MRRNNLO11=0;
-    MRRNNLO12=0;
-    MRRNNLO13=0;
-    MRRNNLO14=0;
-    MRRNNLO15=0;
-    MRRNNLO16=0;
-    MRRNNLO17=0;
-    MRRNNLO18=0;
+#include "../XS/N3LO/SetTwoVarGs.txt"
+#include "../XS/N3LO/SetN3LOGs.txt"
     
-    //SetMRR();
-    //*/
-
+    
     return;
 }
 
@@ -219,16 +202,10 @@ double CrossSection::ComputeTotalXS(const vector<vector<double > > & vec)
 }
 
 
-vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double xxb,double bound1,double bound2,double Jac)
+vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bound1,double bound2,double Jac)
 {
     x1=xx1;
     x2=xx2;
-    xb=xxb;
-    
-    //debug
-    /*x1=0.3;
-    x2=0.1;
-    //*/
     
     ComputeDummyVariables();
     
@@ -239,18 +216,17 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double xxb
     for(i=0;i<pos.size();i++)
         values[pos[i][0]][pos[i][1]][pos[i][2]]=0;
 
-
     
     SetCoefs();
-    //IncCoefs.ComputeDummyVariables(x1*x2);
+    IncCoefs.ComputeDummyVariables(x1*x2);
     //cout<<"z="<<x1*x2<<" and q Q2 N3LO is "<<IncCoefs.values[3][5][0]<<endl;
-    //cout<<"x1: "<<x1<<" x2 "<<x2<<" xscoef 2 0 0 0 = "<<XSCoef[2][0][0][0]<<endl;
+
     for(i=0;i<pos.size();++i)
     {
         //This two lines ensure that the N3LO xs is N3LO inclusive accurate
-        if(pos[i][0]==3)
+        if(pos[i][0]==3&&pos[i][2]==0)
             XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]+=(x1+x2)/2.0/(1.0-x1*x2)*IncCoefs.values[pos[i][0]][pos[i][1]][pos[i][2]];
-
+        
         if(pos[i][1]==0)
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=
             XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]]
@@ -267,6 +243,7 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double xxb
             +XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][1]*Lumi.Lgq01;
         else
             values[pos[i][0]][pos[i][1]][pos[i][2]]+=XSCoef[pos[i][0]][pos[i][1]][pos[i][2]][0]*Lumi.L[pos[i][1]];
+        //*/
         values[pos[i][0]][pos[i][1]][pos[i][2]]*=Jac*pow(L,pos[i][2]);
         
     }
@@ -296,8 +273,7 @@ int Integrand(const double * xx,double * ff,const void * userdata,double * Expor
     CrossSection * xs=(CrossSection*) userdata;
     double x1=xx[0];
     double x2=xx[1];
-//    double xb=xx[3];
-    double xb=0;
+    double xb=xx[3];
 
     double tau=xs->tau;
     double Y,Jac;
@@ -317,7 +293,7 @@ int Integrand(const double * xx,double * ff,const void * userdata,double * Expor
     for(int i=0;i<xs->pos2.size()+1;i++)
         ff[i]=1e-9;
     
-    vector<vector<double> > res=xs->Evaluate(x1,x2,xb,bound1,bound2,Jac);
+    vector<vector<double> > res=xs->Evaluate(x1,x2,bound1,bound2,Jac);
     for(int i=0;i<xs->pos2.size();++i)
         ff[i+1]+=res[xs->pos2[i][1]][xs->pos2[i][0]];
     ff[0]=xs->ComputeTotalXS(res)+1e-6;

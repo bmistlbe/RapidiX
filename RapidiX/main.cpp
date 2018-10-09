@@ -15,11 +15,11 @@ int main(int argc, const char * argv[]) {
     double val=0;
     
     //Test NNLO Subtraction Term
-    /*auto subtraction = nnlo_subtraction(.3);
+    /*auto subtraction = nnlo_subtraction(.1);
     for(auto x : subtraction){
         std::cout << x << "\n";
     }
-    subtraction = nnlo_subtraction(.99);
+    subtraction = nnlo_subtraction(.9);
     for(auto x : subtraction){
         std::cout << x << "\n";
     }
@@ -58,39 +58,18 @@ int main(int argc, const char * argv[]) {
     
     xs.xs.x1=0.5;
     xs.xs.x2=0.5;
-    xs.xs.xb=0.5;
     xs.xs.ComputeDummyVariables();
     xs.xs.SetCoefs();
-    cout<<"xs: "<<xs.xs.XSCoef[2][0][0][0]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][1][0][0]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][2][0][0]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][3][0][0]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][4][0][0]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][5][0][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[3][0][1][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[3][1][1][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[3][2][1][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[3][3][1][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[3][4][1][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[3][5][1][0]<<endl;
      //*/
-    
-    stringstream ss;
-    ss.str("");
-    ss<<path<<"Results/Rapidity/CrossSection_N3LOExpMatched_mu"<<val<<"_zbpow"<<zbpow<<".txt";
 
     xs.IntegrateCrossSection();
-    /*
-    string file=ss.str();
-    ss.str("");
-    ss<<"{";
-    for(int j=0;j<xs.xs.xs.size();++j)
-    {
-        for(int k=0;k<xs.xs.xs[j].size();++k)
-        {
-            ss<<"{"<<xs.xs.xs[j][k]<<","<<xs.xs.error[j][k]<<"},";
-        }
-    }
-    ss<<"}";
-    ofstream out;
-    out.open(file.c_str());
-    out<<ss.str()<<endl;
-    out.close();
-     //*/
+
 
     return 0;
 }

@@ -13,6 +13,20 @@ int main(int argc, const char * argv[]) {
     std::cout << "Hello, World!\n";
     cout<<setprecision(16);
     double val=0;
+    
+    //Test NNLO Subtraction Term
+    /*auto subtraction = nnlo_subtraction(.1);
+    for(auto x : subtraction){
+        std::cout << x << "\n";
+    }
+    subtraction = nnlo_subtraction(.9);
+    for(auto x : subtraction){
+        std::cout << x << "\n";
+    }
+    return 0;
+    //*/
+    
+    
     if(argc<2)
     {
         cout<<"Usage: ./main.out scale"<<endl;
@@ -39,17 +53,21 @@ int main(int argc, const char * argv[]) {
     xs.SetPDF(0,"MMHT2014nnlo68cl");
     //xs.SetPDF(0,"PDF4LHC15_nnlo_mc");
     xs.SetVerbose(2);
-    xs.SetPrecision(5e-3);
+    xs.SetPrecision(1e-3);
     xs.SetNumThreads(8);
     
-    xs.xs.x1=0.9;
-    xs.xs.x2=0.9;
+    xs.xs.x1=0.5;
+    xs.xs.x2=0.5;
+    xs.xs.xb=0.5;
     xs.xs.ComputeDummyVariables();
     xs.xs.SetCoefs();
     cout<<"xs: "<<xs.xs.XSCoef[2][0][0][0]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][0][0][1]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][0][0][2]<<endl;
-    cout<<"xs: "<<xs.xs.XSCoef[2][0][0][3]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[2][1][0][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[2][2][0][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[2][3][0][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[2][4][0][0]<<endl;
+    cout<<"xs: "<<xs.xs.XSCoef[2][5][0][0]<<endl;
+     //*/
     
     stringstream ss;
     ss.str("");

@@ -1,0 +1,28 @@
+#include <complex>
+#include <array>
+#include "functions.hpp"
+#include <ginac/ginac.h>
+std::array<double, ImCount> prepare_imag_parts(double zb){
+    double xb = sqrt(1.0-zb);
+    using namespace GiNaC;
+
+    std::array<GiNaC::ex, ImCount> base_ex{G(lst{I},xb),G(lst{-1,I},xb),G(lst{0,I},xb),G(lst{1,I},xb),G(lst{I,-I},xb),G(lst{I,I},xb)};
+    std::array<double, ImCount> res;
+    std::transform(std::begin(base_ex), std::end(base_ex), std::begin(res),[](const ex &x){
+            auto ev = evalf(x);
+            return ex_to<numeric>(ev.imag_part()).to_double();
+            });
+    return res;
+}
+std::array<double,ReCount> prepare_real_parts(double zb){
+    double xb = sqrt(1.0-zb);
+    using namespace GiNaC;
+    std::array<GiNaC::ex, ReCount> base_ex{G(lst{-1},xb),G(lst{0},xb),G(lst{1},xb),G(lst{-I},xb),G(lst{-1,-1},xb),G(lst{-1,1},xb),G(lst{-1,-I},xb),G(lst{0,-1},xb),G(lst{0,1},xb),G(lst{0,-I},xb),G(lst{1,-1},xb),G(lst{1,1},xb),G(lst{1,-I},xb),G(lst{-I,-1},xb),G(lst{-I,1},xb),G(lst{-I,-I},xb),G(lst{-I,I},xb),G(lst{-1,-1,-I},xb),G(lst{-1,0,-1},xb),G(lst{-1,0,1},xb),G(lst{-1,0,-I},xb),G(lst{-1,1,-I},xb),G(lst{-1,-I,-1},xb),G(lst{-1,-I,1},xb),G(lst{-1,-I,-I},xb),G(lst{-1,-I,I},xb),G(lst{0,-1,-1},xb),G(lst{0,-1,1},xb),G(lst{0,-1,-I},xb),G(lst{0,0,-1},xb),G(lst{0,0,1},xb),G(lst{0,0,-I},xb),G(lst{0,1,-1},xb),G(lst{0,1,1},xb),G(lst{0,1,-I},xb),G(lst{0,-I,-1},xb),G(lst{0,-I,1},xb),G(lst{0,-I,-I},xb),G(lst{0,-I,I},xb),G(lst{1,-1,-I},xb),G(lst{1,0,-1},xb),G(lst{1,0,1},xb),G(lst{1,0,-I},xb),G(lst{1,1,-I},xb),G(lst{1,-I,-1},xb),G(lst{1,-I,1},xb),G(lst{1,-I,-I},xb),G(lst{1,-I,I},xb),G(lst{-I,-1,-1},xb),G(lst{-I,-1,1},xb),G(lst{-I,-1,-I},xb),G(lst{-I,-1,I},xb),G(lst{-I,0,-1},xb),G(lst{-I,0,1},xb),G(lst{-I,0,-I},xb),G(lst{-I,0,I},xb),G(lst{-I,1,-1},xb),G(lst{-I,1,1},xb),G(lst{-I,1,-I},xb),G(lst{-I,1,I},xb),G(lst{-I,-I,-1},xb),G(lst{-I,-I,1},xb),G(lst{-I,-I,-I},xb),G(lst{-I,-I,I},xb),G(lst{-I,I,-1},xb),G(lst{-I,I,1},xb),G(lst{-I,I,-I},xb),G(lst{-I,I,I},xb)};
+    std::array<double, ReCount> res;
+    std::transform(std::begin(base_ex), std::end(base_ex), std::begin(res),[](const ex &x){
+            auto ev = evalf(x);
+            return ex_to<numeric>(ev.real_part()).to_double();
+            });
+    return res;
+}
+

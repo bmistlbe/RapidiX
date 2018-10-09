@@ -8,10 +8,8 @@ void InclusiveCoefficients::ComputeDummyVariables(double z)
     sqrtz=sqrt(z);
     int i=0,j,k;
 
-
-    for(j=0;j<6;j++)
-        for(k=0;k<4;k++)
-            values[3][j][k]=0;
+    for(i=0;i<pos.size();++i)
+        values[pos[i][0]][pos[i][1]][pos[i][2]]=0;
 
     if(z>=0.75)
     {

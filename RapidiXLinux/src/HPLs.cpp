@@ -9,7 +9,6 @@ double HPL(int n1, double x) {
     std::complex<double> res = hpl1_(&n1, &arg);
     return res.real();
 }
-//*/
 double HPL(int n1, int n2, double x) {
     std::complex<double> arg = x;
     std::complex<double> res = hpl2_(&n1, &n2, &arg);
@@ -38,6 +37,23 @@ double HPL(int n1, int n2, double x){return 0;};
 double HPL(int n1, int n2, int n3, double x){return 0;};
 double HPL(int n1, int n2, int n3, int n4, double x){return 0;};
 //*/
+
+/*double HPL(int n1, double x) {
+    return H(n1,x);
+}
+double HPL(int n1, int n2, double x) {
+    return H(n1,n2,x);
+    return 0;
+}
+double HPL(int n1, int n2, int n3, double x) {
+    return H(n1,n2,n3,x);
+    return 0;
+}
+double HPL(int n1, int n2, int n3, int n4, double x) {
+    return H(n1,n2,n3,n4,x);
+    return 0;
+}
+ //*/
 
 double H(int i, double z)
 {

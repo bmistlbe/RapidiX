@@ -119,9 +119,9 @@ void CrossSection::IntegrateCuba()
 
     int NDIM;
     if(Y==110)
-        NDIM=4;
-    else
         NDIM=3;
+    else
+        NDIM=2;
     int NCOMP=pos2.size()+1;
     int NVEC=1;
     double EPSREL= MCPrecision;
@@ -130,9 +130,9 @@ void CrossSection::IntegrateCuba()
     int LAST=4;
     int SEED=0;
     int MINEVAL=1000;
-    int MAXEVAL=500000000;
+    int MAXEVAL=5000000;
     int NSTART=1000;
-    int NINCREASE=50000;
+    int NINCREASE=5000;
     int NBATCH=1000;
     int KEY=9;
     double res[NCOMP], err[NCOMP], chi[NCOMP];
@@ -143,8 +143,11 @@ void CrossSection::IntegrateCuba()
     xs= vector<vector<double> > (6,vector<double> (4,0));
     error= vector<vector<double> > (6,vector<double> (4,0));
     
-    Cuhre(NDIM, NCOMP, CubaIntegrand, this, NVEC,EPSREL, EPSABS, VERBOSE ,MINEVAL, MAXEVAL, KEY, NULL, NULL,&nregions, &neval, &fail, res,err,chi);
     //Cuhre(NDIM, NCOMP, CubaIntegrand, this, NVEC,EPSREL, EPSABS,  VERBOSE, MINEVAL, MAXEVAL, KEY,0, &nregions, &neval,&fail, res, err, chi);
+    fail=0;
+    Cuhre(NDIM, NCOMP, CubaIntegrand, this, NVEC,EPSREL, EPSABS, VERBOSE ,MINEVAL, MAXEVAL, KEY, NULL, NULL,&nregions, &neval, &fail, res,err,chi);
+    if(fail!=0)
+        Vegas(NDIM, NCOMP, CubaIntegrand,this, NVEC, EPSREL, EPSABS, VERBOSE, SEED, MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH, NULL, NULL, NULL,&neval, &fail, res, err, chi);
     
     for(int i=0;i<pos2.size();++i)
     {
@@ -166,13 +169,12 @@ static int CubaIntegrand(const int *ndim, const double xx[], const int *ncomp, d
     CrossSection * xs=(CrossSection*) userdata;
     double x1=xx[0];
     double x2=xx[1];
-    double xb=xx[2];
     
     double tau=xs->tau;
     double Y,Jac;
     if(xs->Y==110)
     {
-        Y=fabs(log(tau))*xx[3]-0.5*fabs(log(tau));
+        Y=fabs(log(tau))*xx[2]-0.5*fabs(log(tau));
         Jac=fabs(log(tau))*xs->pref;
     }
     else
@@ -186,10 +188,15 @@ static int CubaIntegrand(const int *ndim, const double xx[], const int *ncomp, d
     for(int i=0;i<xs->pos2.size()+1;i++)
         ff[i]=1e-9;
     
-    vector<vector<double> > res=xs->Evaluate(x1,x2,xb,bound1,bound2,Jac);
+    vector<vector<double> > res=xs->Evaluate(x1,x2,bound1,bound2,Jac);
     for(int i=0;i<xs->pos2.size();++i)
         ff[i+1]+=res[xs->pos2[i][1]][xs->pos2[i][0]];
     ff[0]=xs->ComputeTotalXS(res)+1e-6;
+    if(isnan(fabs(ff[0]))||isinf(fabs(ff[0])))
+    {
+        cout<<"nan!! "<<endl;
+        return -999;
+    }
     
     //cout<<ff[0]<<endl;
     xs=0;
@@ -206,11 +213,10 @@ int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double
     double x2=xx[1];
     double tau=xs->tau;
     double Y,Jac;
-    double xb=xx[2];
 
     if(xs->Y==110)
     {
-        Y=fabs(log(tau))*xx[3]-0.5*fabs(log(tau));
+        Y=fabs(log(tau))*xx[2]-0.5*fabs(log(tau));
         Jac=fabs(log(tau))*xs->pref;
     }
     else
@@ -223,12 +229,11 @@ int ParallelIntegrand(const double * xx,double * ff,const void * userdata,double
     
     ff[0]=1e-9;
     
-    vector<vector<double> > res=xs->Evaluate(x1,x2,xb,bound1,bound2,Jac);
+    vector<vector<double> > res=xs->Evaluate(x1,x2,bound1,bound2,Jac);
     ExportData[1]=Y;
     for(int i=0;i<xs->pos2.size();++i)
         ExportData[i+2]+=res[xs->pos2[i][1]][xs->pos2[i][0]];
     ff[0]=xs->ComputeTotalXS(res)+1e-6;
-    
     xs=0;
     return 0;
 }

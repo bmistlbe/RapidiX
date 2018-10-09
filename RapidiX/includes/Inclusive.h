@@ -54,34 +54,34 @@ public:
         
         //N3LO - g g
         pos.push_back(lst(3,0,0));
-        pos.push_back(lst(3,0,1));
-        pos.push_back(lst(3,0,2));
-        pos.push_back(lst(3,0,3));
+//        pos.push_back(lst(3,0,1));
+//        pos.push_back(lst(3,0,2));
+//        pos.push_back(lst(3,0,3));
         //N3LO - q g
         pos.push_back(lst(3,1,0));
-        pos.push_back(lst(3,1,1));
-        pos.push_back(lst(3,1,2));
-        pos.push_back(lst(3,1,3));
+//        pos.push_back(lst(3,1,1));
+//        pos.push_back(lst(3,1,2));
+//        pos.push_back(lst(3,1,3));
         //N3LO - g q
         pos.push_back(lst(3,2,0));
-        pos.push_back(lst(3,2,1));
-        pos.push_back(lst(3,2,2));
-        pos.push_back(lst(3,2,3));
+//        pos.push_back(lst(3,2,1));
+//        pos.push_back(lst(3,2,2));
+//        pos.push_back(lst(3,2,3));
         //N3LO - q qbar
         pos.push_back(lst(3,3,0));
-        pos.push_back(lst(3,3,1));
-        pos.push_back(lst(3,3,2));
-        pos.push_back(lst(3,3,3));
+//        pos.push_back(lst(3,3,1));
+//        pos.push_back(lst(3,3,2));
+//        pos.push_back(lst(3,3,3));
         //N3LO - q q
         pos.push_back(lst(3,4,0));
-        pos.push_back(lst(3,4,1));
-        pos.push_back(lst(3,4,2));
-        pos.push_back(lst(3,4,3));
+//        pos.push_back(lst(3,4,1));
+//        pos.push_back(lst(3,4,2));
+//        pos.push_back(lst(3,4,3));
         //N3LO - q Q2
         pos.push_back(lst(3,5,0));
-        pos.push_back(lst(3,5,1));
-        pos.push_back(lst(3,5,2));
-        pos.push_back(lst(3,5,3));
+//        pos.push_back(lst(3,5,1));
+//        pos.push_back(lst(3,5,2));
+//        pos.push_back(lst(3,5,3));
         //*/
         
         Initiate();
