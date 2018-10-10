@@ -125,7 +125,7 @@ void CrossSection::IntegrateCuba()
     int NCOMP=pos2.size()+1;
     int NVEC=1;
     double EPSREL= MCPrecision;
-    double EPSABS= 1e-18;
+    double EPSABS= 1e-6;
     int VERBOSE=MCVerbose;
     int LAST=4;
     int SEED=0;
@@ -143,16 +143,17 @@ void CrossSection::IntegrateCuba()
     xs= vector<vector<double> > (6,vector<double> (4,0));
     error= vector<vector<double> > (6,vector<double> (4,0));
     
+    
     //Cuhre(NDIM, NCOMP, CubaIntegrand, this, NVEC,EPSREL, EPSABS,  VERBOSE, MINEVAL, MAXEVAL, KEY,0, &nregions, &neval,&fail, res, err, chi);
     fail=0;
     Cuhre(NDIM, NCOMP, CubaIntegrand, this, NVEC,EPSREL, EPSABS, VERBOSE ,MINEVAL, MAXEVAL, KEY, NULL, NULL,&nregions, &neval, &fail, res,err,chi);
     if(fail!=0)
         Vegas(NDIM, NCOMP, CubaIntegrand,this, NVEC, EPSREL, EPSABS, VERBOSE, SEED, MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH, NULL, NULL, NULL,&neval, &fail, res, err, chi);
-    
+
     for(int i=0;i<pos2.size();++i)
     {
         xs[pos2[i][1]][pos2[i][0]]=res[i+1]-1e-6;
-        error[pos2[i][1]][pos2[i][0]]=err[i+1];
+        error[pos2[i][1]][pos2[i][0]]=fabs(err[i+1]);
         cout<<"Integration Result "<<i<<" = "<<res[i+1]<<" +- "<<err[i+1]<<" +- "<<fabs(err[i+1]/res[i+1])*100 <<" %"<<endl;
         if(fabs(xs[pos2[i][1]][pos2[i][0]])<1e-6)
         {

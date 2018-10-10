@@ -153,9 +153,9 @@ void CrossSection::Integrate()
     VegasIntegrator vegas;
     vegas.verbose=MCVerbose;
     if(Y==110)
-        vegas.dimension=4;
-    else
         vegas.dimension=3;
+    else
+        vegas.dimension=2;
     vegas.components=pos2.size()+1;
     vegas.precision=MCPrecision;
     vegas.startsize=1e4;
@@ -177,7 +177,7 @@ void CrossSection::Integrate()
     for(int i=0;i<pos2.size();++i)
     {
         xs[pos2[i][1]][pos2[i][0]]=res[i+1]-1e-6;
-        error[pos2[i][1]][pos2[i][0]]=err[i+1];
+        error[pos2[i][1]][pos2[i][0]]=fabs(err[i+1]);
         cout<<"Integration Result "<<i<<" = "<<res[i+1]<<" +- "<<err[i+1]<<" +- "<<fabs(err[i+1]/res[i+1])*100 <<" %"<<endl;
         if(fabs(xs[pos2[i][1]][pos2[i][0]])<1e-5)
         {
@@ -216,9 +216,15 @@ vector<vector<double> >  CrossSection::Evaluate(double xx1,double xx2,double bou
     for(i=0;i<pos.size();i++)
         values[pos[i][0]][pos[i][1]][pos[i][2]]=0;
 
+    for(i=0;i<4;i++)
+        for( j=0;j<6;j++)
+            for( k=0;k<4;k++)
+                for(int l=0;l<4;l++)
+                    XSCoef[i][j][k][l]=0;
+    //*/
     
     SetCoefs();
-    IncCoefs.ComputeDummyVariables(x1*x2);
+    //IncCoefs.ComputeDummyVariables(x1*x2);
     //cout<<"z="<<x1*x2<<" and q Q2 N3LO is "<<IncCoefs.values[3][5][0]<<endl;
 
     for(i=0;i<pos.size();++i)

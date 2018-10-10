@@ -22,12 +22,29 @@ void CrossSection::SetN3LO()
     //*/
     
     
-#include "../XS/N3LO/xs_THOnlyMatched_g_g.txt"
+/*#include "../XS/N3LO/xs_THOnlyMatched_g_g.txt"
 #include "../XS/N3LO/xs_THOnlyMatched_q_g.txt"
 #include "../XS/N3LO/xs_THOnlyMatched_g_q.txt"
 #include "../XS/N3LO/xs_THOnlyMatched_q_qbar.txt"
 #include "../XS/N3LO/xs_THOnlyMatched_q_q.txt"
 #include "../XS/N3LO/xs_THOnlyMatched_q_Q2.txt"
+    //*/
+    
+/*#include "../XS/N3LO/xs_N3LOLogImproved_g_g.txt"
+#include "../XS/N3LO/xs_N3LOLogImproved_q_g.txt"
+#include "../XS/N3LO/xs_N3LOLogImproved_g_q.txt"
+#include "../XS/N3LO/xs_N3LOLogImproved_q_qbar.txt"
+#include "../XS/N3LO/xs_N3LOLogImproved_q_q.txt"
+#include "../XS/N3LO/xs_N3LOLogImproved_q_Q2.txt"
+    //*/
+
+
+/*#include "../XS/N3LO/xs_N3LOInclusiveCT_g_g.txt"
+#include "../XS/N3LO/xs_N3LOInclusiveCT_q_g.txt"
+#include "../XS/N3LO/xs_N3LOInclusiveCT_g_q.txt"
+#include "../XS/N3LO/xs_N3LOInclusiveCT_q_qbar.txt"
+#include "../XS/N3LO/xs_N3LOInclusiveCT_q_q.txt"
+#include "../XS/N3LO/xs_N3LOInclusiveCT_q_Q2.txt"
     //*/
     return;
     

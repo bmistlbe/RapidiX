@@ -153,9 +153,9 @@ void CrossSection::Integrate()
     VegasIntegrator vegas;
     vegas.verbose=MCVerbose;
     if(Y==110)
-        vegas.dimension=4;
-    else
         vegas.dimension=3;
+    else
+        vegas.dimension=2;
     vegas.components=pos2.size()+1;
     vegas.precision=MCPrecision;
     vegas.startsize=1e4;
@@ -177,7 +177,7 @@ void CrossSection::Integrate()
     for(int i=0;i<pos2.size();++i)
     {
         xs[pos2[i][1]][pos2[i][0]]=res[i+1]-1e-6;
-        error[pos2[i][1]][pos2[i][0]]=err[i+1];
+        error[pos2[i][1]][pos2[i][0]]=fabs(err[i+1]);
         cout<<"Integration Result "<<i<<" = "<<res[i+1]<<" +- "<<err[i+1]<<" +- "<<fabs(err[i+1]/res[i+1])*100 <<" %"<<endl;
         if(fabs(xs[pos2[i][1]][pos2[i][0]])<1e-5)
         {
@@ -279,7 +279,6 @@ int Integrand(const double * xx,double * ff,const void * userdata,double * Expor
     CrossSection * xs=(CrossSection*) userdata;
     double x1=xx[0];
     double x2=xx[1];
-    double xb=xx[3];
 
     double tau=xs->tau;
     double Y,Jac;

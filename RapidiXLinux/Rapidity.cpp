@@ -39,7 +39,7 @@ int main(int argc, const char * argv[]) {
     xs.SetWilsonCoefficientMode(1);
     xs.SetPDF(0,"MMHT2014nnlo68cl");
     xs.SetVerbose(1);
-    xs.SetPrecision(1e-3);
+    xs.SetPrecision(1e-4);
     xs.SetNumThreads(4);
     
     vector<vector<double> > res,err;
@@ -53,8 +53,8 @@ int main(int argc, const char * argv[]) {
         cout<<"Treating Rapidity "<<i<<endl;
         xs.SetY(i+1e-10);
         ss.str("");
-        ss<<path<<"Results/Rapidity/Rapidity_N3LOTHOnly_Y"<<i<<"_mu"<<val<<"_zbpow"<<zbpow<<".txt";
-        //ss<<path<<"Results/Rapidity/Rapidity_NNLO_Y"<<i<<"_mu"<<val<<".txt";
+        //ss<<path<<"Results/Rapidity/Rapidity_N3LOTHOnly_Y"<<i<<"_mu"<<val<<"_zbpow"<<zbpow<<".txt";
+        ss<<path<<"Results/Rapidity/Rapidity_AllButN3LO_Y"<<i<<"_mu"<<val<<".txt";
         xs.IntegrateCrossSection();
         string file=ss.str();
         ss.str("");

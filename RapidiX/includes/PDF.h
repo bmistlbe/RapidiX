@@ -65,7 +65,7 @@ public:
         grid_small.resize(11);
         gridmode=false;
         n=10000;
-        InterpolationPower=3;
+        InterpolationPower=4;
         pos.resize(InterpolationPower,0);
     };
     

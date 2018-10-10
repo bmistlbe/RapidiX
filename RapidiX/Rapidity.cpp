@@ -28,6 +28,7 @@ int main(int argc, const char * argv[]) {
         zbpow=atoi(argv[2]);
     for(int j=zbpow;j<zbpowvec.size();++j)
         (*zbpowvec[j])=0;
+    cout<<"Starting power in zb is "<<zbpow-2<<endl;
 
     Higgs xs;
     xs.SetMuf(val);
@@ -38,8 +39,8 @@ int main(int argc, const char * argv[]) {
     //0=off,1=MSB,2=OS
     xs.SetWilsonCoefficientMode(1);
     xs.SetPDF(0,"MMHT2014nnlo68cl");
-    xs.SetVerbose(1);
-    xs.SetPrecision(1e-3);
+    xs.SetVerbose(0);
+    xs.SetPrecision(1e-4);
     xs.SetNumThreads(4);
     
     vector<vector<double> > res,err;
@@ -53,10 +54,12 @@ int main(int argc, const char * argv[]) {
         cout<<"Treating Rapidity "<<i<<endl;
         xs.SetY(i+1e-10);
         ss.str("");
-        ss<<path<<"../RapidiXLinux/Results/Rapidity/Rapidity_N3LOApprox_Y"<<i<<"_mu"<<val<<"_zbpow"<<zbpow<<".txt";
-        //ss<<path<<"Results/Rapidity/Rapidity_NNLO_Y"<<i<<"_mu"<<val<<".txt";
+        //ss<<path<<"../RapidiXLinux/Results/Rapidity/Rapidity_N3LOLogImprovedMatched_Y"<<i<<"_mu"<<val<<"_zbpow"<<zbpow<<".txt";
+        //ss<<path<<"../RapidiXLinux/Results/Rapidity/Rapidity_AllButN3LO_Y"<<i<<"_mu"<<val<<".txt";
+        ss<<path<<"Results/Rapidity/Rapidity_TEST_Y"<<i<<"_mu"<<val<<".txt";
         xs.IntegrateCrossSection();
         string file=ss.str();
+        cout<<"Exporting to file "<<file<<endl;
         ss.str("");
         ss<<"{";
         for(int j=0;j<xs.xs.xs.size();++j)

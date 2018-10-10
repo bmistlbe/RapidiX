@@ -8,7 +8,7 @@ void Higgs::IntegrateCrossSection()
     Lumi.pdf->SetMZ(mZ);
     Lumi.pdf->SetMT(mt);
     Lumi.pdf->SetMuf(muf);
-    //Lumi.pdf->CreateGrid(muf);
+    Lumi.pdf->CreateGrid(muf);
     //ar=Lumi.pdf->GetAlphaFromPDF(mur)/Pi;
     ar=Lumi.pdf->GetAlpha(mur)/Pi;
     cout<<"Alpha_S("<<mur<<")="<<ar*Pi<<"."<<endl;

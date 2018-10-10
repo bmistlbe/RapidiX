@@ -21,8 +21,6 @@ void CrossSection::SetNNLO()
 #include "../XS/NumericalNNLO/xs_q_Q2_GridPart.txt"
     //*/
     
-    
-    
     //NNLO XS Log Improved Approximation + exact factorisation scale logs
     //MuF Logs:
 /*#include "../XS/NNLOLogImproved/xs_g_g.txt"
